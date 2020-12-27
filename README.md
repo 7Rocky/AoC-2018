@@ -6,3 +6,4 @@ Resolution of the problems in Java language:
 | ------------ | ---------------------------------- | ------------------------------ |
 | [Day 01](01) | Chronal Calibration                | :star:                         |
 | [Day 02](02) | Inventory Management System        | :star:                         |
+| [Day 03](03) | No Matter How You Slice It         | :star::star:                   |
