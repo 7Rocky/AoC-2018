@@ -16,7 +16,7 @@ public class Main {
       bufferedReader = new BufferedReader(new FileReader("./input.txt"));
     } catch (FileNotFoundException e) { }
 
-    List<Integer> frequencyChanges = new ArrayList<Integer>();
+    List<Integer> frequencyChanges = new ArrayList<>();
 
     bufferedReader.lines().forEach(line -> frequencyChanges.add(Integer.parseInt(line)));
 
@@ -24,7 +24,7 @@ public class Main {
 
     System.out.println("Resulting frequency (1): " + result);
 
-    List<Integer> resultingFrequencies = new ArrayList<Integer>();
+    List<Integer> resultingFrequencies = new ArrayList<>();
 
     result = 0;
     int i = 0;
