@@ -1,8 +1,8 @@
 package main;
 
+import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.BufferedReader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +10,15 @@ import java.util.List;
 public class Main {
 
   public static void main(String[] args) {
-    BufferedReader br = null;
+    BufferedReader bufferedReader = null;
 
     try {
-      br = new BufferedReader(new FileReader("./input.txt"));
+      bufferedReader = new BufferedReader(new FileReader("./input.txt"));
     } catch (FileNotFoundException e) { }
 
     List<Integer> frequencyChanges = new ArrayList<Integer>();
 
-    br.lines().forEach(line -> frequencyChanges.add(Integer.parseInt(line)));
+    bufferedReader.lines().forEach(line -> frequencyChanges.add(Integer.parseInt(line)));
 
     int result = frequencyChanges.stream().reduce(0, Integer::sum);
 
