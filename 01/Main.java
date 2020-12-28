@@ -18,7 +18,7 @@ public class Main {
 
     List<Integer> frequencyChanges = new ArrayList<>();
 
-    bufferedReader.lines().forEach(line -> frequencyChanges.add(Integer.parseInt(line)));
+    bufferedReader.lines().map(Integer::parseInt).forEach(frequencyChanges::add);
 
     int result = frequencyChanges.stream().reduce(0, Integer::sum);
 
