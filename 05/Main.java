@@ -55,7 +55,7 @@ public class Main {
 
     for (char c = 'A'; c <= 'Z'; c++) {
       String newPolymer = polymer.replace(String.valueOf(c), "")
-                                 .replace(String.valueOf(c).toLowerCase(), "");
+                                 .replace(String.valueOf((char) (c + 32)), "");
 
       int newLength = reactPolymer(newPolymer).length();
 
