@@ -12,8 +12,27 @@ public class Main {
 
   static Pattern pattern = null;
 
+  public static Pattern generatePattern() {
+    if (pattern != null) return pattern;
+
+    StringBuilder patternString = new StringBuilder("(");
+
+    for (char c = 'A'; c <= 'Z'; c++) {
+      if (c != 'A') patternString.append('|');
+
+      patternString.append(c).append((char) (c + 32))
+        .append('|').append((char) (c + 32)).append(c);
+    }
+
+    patternString.append(')');
+
+    pattern = Pattern.compile(patternString.toString());
+
+    return pattern;
+  }
+
   private static String reactPolymer(String polymer) {
-    Matcher matcher = pattern.matcher(polymer);
+    Matcher matcher = Main.generatePattern().matcher(polymer);
 
     while (matcher.find()) {
       polymer = polymer.replace(matcher.group(1), "");
@@ -32,21 +51,6 @@ public class Main {
       polymer = bufferedReader.readLine();
     } catch (FileNotFoundException e) {
     } catch (IOException e) { }
-
-    StringBuilder patternString = new StringBuilder("(");
-
-    for (char c = 'A'; c <= 'Z'; c++) {
-      if (c != 'A') patternString.append('|');
-
-      patternString.append(c).append((char) (c + 32))
-        .append('|').append((char) (c + 32)).append(c);
-    }
-
-    patternString.append(')');
-
-    pattern = Pattern.compile(patternString.toString());
-
-    polymer = reactPolymer(polymer);
 
     System.out.print("Units remaining (1): ");
     System.out.println(reactPolymer(polymer).length());
