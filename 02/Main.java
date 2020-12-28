@@ -5,18 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class Main {
 
-  public static int countIDWithOcurrences(List<HashMap<String, Integer>> letterCounts, int number) {
+  public static int countIDWithOcurrences(List<Map<String, Integer>> letterCounts, int number) {
     int count = 0;
 
-    for (HashMap<String, Integer> hM : letterCounts) {
-      for (int n : hM.values()) {
+    for (Map<String, Integer> m : letterCounts) {
+      for (int n : m.values()) {
         if (n == number) {
           count++;
           break;
@@ -37,9 +38,7 @@ public class Main {
       }
     }
 
-    differences += Math.abs(s1.length() - s2.length());
-
-    return differences;
+    return differences + Math.abs(s1.length() - s2.length());
   }
 
   public static String getCommonLetters(String s1, String s2) {
@@ -64,9 +63,9 @@ public class Main {
 
     List<String> boxIDs = new ArrayList<>();
 
-    bufferedReader.lines().forEach(line -> boxIDs.add(line));
+    bufferedReader.lines().forEach(boxIDs::add);
 
-    List<HashMap<String, Integer>> boxIDLetterCounts = new ArrayList<>();
+    List<Map<String, Integer>> boxIDLetterCounts = new ArrayList<>();
 
     for (int i = 0; i < boxIDs.size(); i++) {
       boxIDLetterCounts.add(new HashMap<String, Integer>());
