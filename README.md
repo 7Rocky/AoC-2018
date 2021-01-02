@@ -10,3 +10,4 @@ Resolution of the problems in Java language:
 | [Day 04](04) | Repose Record                      | :star::star::star:             |
 | [Day 05](05) | Alchemical Reduction               | :star::star:                   |
 | [Day 06](06) | Chronal Coordinates                | :star::star::star:             |
+| [Day 07](07) | The Sum of Its Parts               | :star::star::star:             |
