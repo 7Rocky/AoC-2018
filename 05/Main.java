@@ -47,7 +47,7 @@ public class Main {
     String polymer = "";
 
     try {
-      bufferedReader = new BufferedReader(new FileReader("./input.txt"));
+      bufferedReader = new BufferedReader(new FileReader("input.txt"));
       polymer = bufferedReader.readLine();
     } catch (FileNotFoundException e) {
     } catch (IOException e) { }
