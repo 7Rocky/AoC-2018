@@ -11,3 +11,4 @@ Resolution of the problems in Java language:
 | [Day 05](05) | Alchemical Reduction               | :star::star:                   |
 | [Day 06](06) | Chronal Coordinates                | :star::star::star:             |
 | [Day 07](07) | The Sum of Its Parts               | :star::star::star:             |
+| [Day 08](08) | Memory Maneuver                    | :star::star:                   |
