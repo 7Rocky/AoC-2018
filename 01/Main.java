@@ -13,7 +13,7 @@ public class Main {
     BufferedReader bufferedReader = null;
 
     try {
-      bufferedReader = new BufferedReader(new FileReader("./input.txt"));
+      bufferedReader = new BufferedReader(new FileReader("input.txt"));
     } catch (FileNotFoundException e) { }
 
     List<Integer> frequencyChanges = new ArrayList<>();
