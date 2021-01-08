@@ -18,7 +18,7 @@ public class Main {
     BufferedReader bufferedReader = null;
 
     try {
-      bufferedReader = new BufferedReader(new FileReader("./input.txt"));
+      bufferedReader = new BufferedReader(new FileReader("input.txt"));
     } catch (FileNotFoundException e) { }
 
     Pattern pattern = Pattern.compile("(\\d+),\\s(\\d+)");
