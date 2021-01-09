@@ -1,9 +1,8 @@
-package main;
+package day_03;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,29 +22,13 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    BufferedReader bufferedReader = null;
-
-    try {
-      bufferedReader = new BufferedReader(new FileReader("input.txt"));
-    } catch (FileNotFoundException e) { }
-
-    Pattern pattern = Pattern.compile("#(\\d+)\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)");
-
     List<Claim> claims = new ArrayList<>();
 
-    bufferedReader.lines().forEach(line -> {
-      Matcher matcher = pattern.matcher(line);
-
-      while (matcher.find()) {
-        int id = Integer.parseInt(matcher.group(1));
-        int left = Integer.parseInt(matcher.group(2));
-        int top = Integer.parseInt(matcher.group(3));
-        int width = Integer.parseInt(matcher.group(4));
-        int height = Integer.parseInt(matcher.group(5));
-
-        claims.add(new Claim(id, left, top, width, height));
-      }
-    });
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+      bufferedReader.lines().forEach(line -> Main.setClaims(claims, line));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     int maxLeft = 0;
     int maxTop = 0;
@@ -53,10 +36,21 @@ public class Main {
     int maxHeight = 0;
 
     for (Claim claim : claims) {
-      if (claim.getLeft() > maxLeft) maxLeft = claim.getLeft();
-      if (claim.getTop() > maxTop) maxTop = claim.getTop();
-      if (claim.getWidth() > maxWidth) maxWidth = claim.getWidth();
-      if (claim.getHeight() > maxHeight) maxHeight = claim.getHeight();
+      if (claim.getLeft() > maxLeft) {
+        maxLeft = claim.getLeft();
+      }
+
+      if (claim.getTop() > maxTop) {
+        maxTop = claim.getTop();
+      }
+
+      if (claim.getWidth() > maxWidth) {
+        maxWidth = claim.getWidth();
+      }
+
+      if (claim.getHeight() > maxHeight) {
+        maxHeight = claim.getHeight();
+      }
     }
 
     List<String> fabric = new ArrayList<>();
@@ -65,6 +59,31 @@ public class Main {
       fabric.add(".".repeat(maxLeft + maxWidth));
     }
 
+    Main.setFabric(fabric, claims);
+
+    System.out.print("Number of claim overlaps (1): ");
+    System.out.println(Main.countOverlaps(fabric, 'X'));
+
+    System.out.print("Non-overlaping claim ID (2): ");
+    System.out.println(Main.findNonOverlapingClaimId(fabric, claims));
+  }
+
+  private static void setClaims(List<Claim> claims, String line) {
+    Pattern pattern = Pattern.compile("#(\\d+)\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)");
+    Matcher matcher = pattern.matcher(line);
+
+    while (matcher.find()) {
+      int id = Integer.parseInt(matcher.group(1));
+      int left = Integer.parseInt(matcher.group(2));
+      int top = Integer.parseInt(matcher.group(3));
+      int width = Integer.parseInt(matcher.group(4));
+      int height = Integer.parseInt(matcher.group(5));
+
+      claims.add(new Claim(id, left, top, width, height));
+    }
+  }
+
+  private static void setFabric(List<String> fabric, List<Claim> claims) {
     for (Claim claim : claims) {
       for (int y = claim.getTop(); y < claim.getTop() + claim.getHeight(); y++) {
         String row = fabric.get(y);
@@ -82,9 +101,9 @@ public class Main {
         fabric.set(y, newRow.toString());
       }
     }
+  }
 
-    System.out.println("Number of claim overlaps (1): " + countOverlaps(fabric, 'X'));
-
+  private static int findNonOverlapingClaimId(List<String> fabric, List<Claim> claims) {
     int nonOverlapingClaimId = -1;
 
     for (Claim claim : claims) {
@@ -101,13 +120,16 @@ public class Main {
         }
       }
 
-      if (nonOverlapingClaimId != -1) break;
+      if (nonOverlapingClaimId != -1) {
+        break;
+      }
     }
 
-    System.out.println("Non-overlaping claim ID (2): " + nonOverlapingClaimId);
+    return nonOverlapingClaimId;
   }
 
 }
+
 
 class Claim {
 
