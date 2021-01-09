@@ -2,6 +2,12 @@
 
 Resolution of the problems in Java language:
 
+```
+git clone https://github.com/7Rocky/AoC-2018
+cd AoC-2018/day_<number>
+java Main.java
+```
+
 | Problem          | Title                              | Difficulty                     |
 | ---------------- | ---------------------------------- | ------------------------------ |
 | [Day 01](day_01) | Chronal Calibration                | :star:                         |
