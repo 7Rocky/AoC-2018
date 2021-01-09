@@ -1,8 +1,8 @@
-package main;
+package day_06;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,45 +15,46 @@ import java.util.regex.Pattern;
 public class Main {
 
   public static void main(String[] args) {
-    BufferedReader bufferedReader = null;
-
-    try {
-      bufferedReader = new BufferedReader(new FileReader("input.txt"));
-    } catch (FileNotFoundException e) { }
-
     Pattern pattern = Pattern.compile("(\\d+),\\s(\\d+)");
 
     List<Coordinate> coordinates = new ArrayList<>();
 
-    bufferedReader.lines().forEach(line -> {
-      Matcher matcher = pattern.matcher(line);
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+      bufferedReader.lines().forEach(line -> {
+        Matcher matcher = pattern.matcher(line);
 
-      while (matcher.find()) {
-        int x = Integer.parseInt(matcher.group(1));
-        int y = Integer.parseInt(matcher.group(2));
+        while (matcher.find()) {
+          int x = Integer.parseInt(matcher.group(1));
+          int y = Integer.parseInt(matcher.group(2));
 
-        coordinates.add(new Coordinate(x, y));
-      }
-    });
+          coordinates.add(new Coordinate(x, y));
+        }
+      });
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-    int max = coordinates.stream().map(c -> c.getX()).max(Integer::compareTo).get();
-    int min = coordinates.stream().map(c -> c.getX()).min(Integer::compareTo).get();
+
+
+    int max = coordinates.stream().map(Coordinate::getX).max(Integer::compareTo).orElse(-1);
+    int min = coordinates.stream().map(Coordinate::getX).min(Integer::compareTo).orElse(-1);
 
     Map<String, Integer> closestAreas = new HashMap<>();
 
     for (Coordinate c : coordinates) {
-        int size = c.countClosestAreas(coordinates, min - 100, max + 100);
+      int size = c.countClosestAreas(coordinates, min - 100, max + 100);
 
-        closestAreas.put(c.toString(), size);
+      closestAreas.put(c.toString(), size);
     }
 
     for (Coordinate c : coordinates) {
-        int size = c.countClosestAreas(coordinates, min, max);
+      int size = c.countClosestAreas(coordinates, min, max);
 
-        if (closestAreas.get(c.toString()) != size) closestAreas.remove(c.toString());
+      if (closestAreas.get(c.toString()) != size)
+        closestAreas.remove(c.toString());
     }
 
-    int largestSize = closestAreas.values().stream().max(Integer::compareTo).get();
+    int largestSize = closestAreas.values().stream().max(Integer::compareTo).orElse(-1);
 
     System.out.print("Size of the largest area (1): ");
     System.out.println(largestSize);
@@ -66,7 +67,8 @@ public class Main {
         Coordinate coordinate = new Coordinate(x, y);
         int totalDistance = coordinates.stream().map(coordinate::distance).reduce(0, Integer::sum);
 
-        if (minimumDistance > totalDistance) safeArea++;
+        if (minimumDistance > totalDistance)
+          safeArea++;
       }
     }
 
@@ -75,6 +77,7 @@ public class Main {
   }
 
 }
+
 
 class Coordinate {
 
@@ -89,10 +92,10 @@ class Coordinate {
   public int countClosestAreas(List<Coordinate> coordinates, int min, int max) {
     int closestAreas = 0;
 
-    for (int x = min; x <= max; x++) {
-      for (int y = min; y <= max; y++) {
+    for (int i = min; i <= max; i++) {
+      for (int j = min; j <= max; j++) {
         boolean isClosest = true;
-        Coordinate coordinate = new Coordinate(x, y);
+        Coordinate coordinate = new Coordinate(i, j);
 
         int d = this.distance(coordinate);
 
@@ -103,7 +106,8 @@ class Coordinate {
           }
         }
 
-        if (isClosest) closestAreas++;
+        if (isClosest)
+          closestAreas++;
       }
     }
 
@@ -123,6 +127,11 @@ class Coordinate {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return new StringBuilder().append(x).append(y).toString().hashCode();
   }
 
   public int getX() {
