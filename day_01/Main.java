@@ -1,8 +1,8 @@
-package main;
+package day_01;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +10,18 @@ import java.util.List;
 public class Main {
 
   public static void main(String[] args) {
-    BufferedReader bufferedReader = null;
-
-    try {
-      bufferedReader = new BufferedReader(new FileReader("input.txt"));
-    } catch (FileNotFoundException e) { }
-
     List<Integer> frequencyChanges = new ArrayList<>();
 
-    bufferedReader.lines().map(Integer::parseInt).forEach(frequencyChanges::add);
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+      bufferedReader.lines().map(Integer::parseInt).forEach(frequencyChanges::add);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     int result = frequencyChanges.stream().reduce(0, Integer::sum);
 
-    System.out.println("Resulting frequency (1): " + result);
+    System.out.print("Resulting frequency (1): ");
+    System.out.println(result);
 
     List<Integer> resultingFrequencies = new ArrayList<>();
 
@@ -36,7 +35,8 @@ public class Main {
       i++;
     }
 
-    System.out.println("First frequency reached twice (2): " + result);
+    System.out.print("First frequency reached twice (2): ");
+    System.out.println(result);
   }
 
 }
