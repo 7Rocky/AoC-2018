@@ -1,9 +1,8 @@
-package main;
+package day_04;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -19,18 +18,13 @@ import java.util.regex.Pattern;
 public class Main {
 
   public static void main(String[] args) {
-    BufferedReader bufferedReader = null;
-
-    try {
-      bufferedReader = new BufferedReader(new FileReader("input.txt"));
-    } catch (FileNotFoundException e) { }
-
-    Pattern patternId = Pattern.compile("#(\\d+)");
-    Pattern patternDate = Pattern.compile("\\[(\\d+)-(\\d+)-(\\d+)\\s(\\d+):(\\d+)\\]");
-
     Set<String> sortedLines = new TreeSet<>();
 
-    bufferedReader.lines().forEach(sortedLines::add);
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+      bufferedReader.lines().forEach(sortedLines::add);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     Map<Integer, Guard> guards = new HashMap<>();
 
@@ -38,37 +32,11 @@ public class Main {
 
     for (String line : sortedLines) {
       if (line.contains("#")) {
-        Matcher matcher = patternId.matcher(line);
-
-        while (matcher.find()) {
-          id = Integer.parseInt(matcher.group(1));
-
-          if (guards.get(id) == null) guards.put(id, new Guard(id));
-        }
-
+        id = Main.setGuardsIds(guards, line);
         continue;
       }
 
-      Matcher matcher = patternDate.matcher(line);
-
-      while (matcher.find()) {
-        int year = Integer.parseInt(matcher.group(1));
-        int month = Integer.parseInt(matcher.group(2));
-        int day = Integer.parseInt(matcher.group(3));
-        int hour = Integer.parseInt(matcher.group(4));
-        int minutes = Integer.parseInt(matcher.group(5));
-
-        LocalDateTime date = LocalDateTime.of(year, month, day, hour, minutes);
-        Guard guard = guards.get(id);
-
-        if (line.contains("falls asleep")) {
-          guard.addFallAsleeps(date);
-        } else if (line.contains("wakes up")) {
-          guard.addWakeUps(date);
-        }
-
-        guards.put(id, guard);
-      }
+      setGuardsSleepingTime(guards, id, line);
     }
 
     int max = 0;
@@ -77,36 +45,81 @@ public class Main {
     for (Guard guard : guards.values()) {
       int minutes = guard.getMinutesAsleep();
 
-      if(minutes > max) {
+      if (minutes > max) {
         max = minutes;
         sleepyGuard = guard;
       }
     }
 
-    int[] result = sleepyGuard.getTimeMostAsleep();
+    int[] result = new int[2];
 
-    System.out.print("Guard sleeping most of the time (1): ");
-    System.out.println((sleepyGuard.getId() * result[0]));
+    if (sleepyGuard != null) {
+      result = sleepyGuard.getTimeMostAsleep();
+
+      System.out.print("Guard sleeping most of the time (1): ");
+      System.out.println((sleepyGuard.getId() * result[0]));
+    }
 
     max = 0;
-    result = new int[]{ 0, 0 };
+    result = new int[] {0, 0};
 
     for (Guard guard : guards.values()) {
       result = guard.getTimeMostAsleep();
 
-      if(result[1] > max) {
+      if (result[1] > max) {
         max = result[1];
         sleepyGuard = guard;
       }
     }
 
-    result = sleepyGuard.getTimeMostAsleep();
+    if (sleepyGuard != null) {
+      result = sleepyGuard.getTimeMostAsleep();
 
-    System.out.print("Guard sleeping most at a specific minute (2): ");
-    System.out.println((sleepyGuard.getId() * result[0]));
+      System.out.print("Guard sleeping most at a specific minute (2): ");
+      System.out.println((sleepyGuard.getId() * result[0]));
+    }
+  }
+
+  private static int setGuardsIds(Map<Integer, Guard> guards, String line) {
+    Pattern patternId = Pattern.compile("#(\\d+)");
+    Matcher matcher = patternId.matcher(line);
+
+    int id = 0;
+
+    while (matcher.find()) {
+      id = Integer.parseInt(matcher.group(1));
+      guards.computeIfAbsent(id, Guard::new);
+    }
+
+    return id;
+  }
+
+  private static void setGuardsSleepingTime(Map<Integer, Guard> guards, int id, String line) {
+    Pattern patternDate = Pattern.compile("\\[(\\d+)-(\\d+)-(\\d+)\\s(\\d+):(\\d+)\\]");
+    Matcher matcher = patternDate.matcher(line);
+
+    while (matcher.find()) {
+      int year = Integer.parseInt(matcher.group(1));
+      int month = Integer.parseInt(matcher.group(2));
+      int day = Integer.parseInt(matcher.group(3));
+      int hour = Integer.parseInt(matcher.group(4));
+      int minutes = Integer.parseInt(matcher.group(5));
+
+      LocalDateTime date = LocalDateTime.of(year, month, day, hour, minutes);
+      Guard guard = guards.get(id);
+
+      if (line.contains("falls asleep")) {
+        guard.addFallAsleeps(date);
+      } else if (line.contains("wakes up")) {
+        guard.addWakeUps(date);
+      }
+
+      guards.put(id, guard);
+    }
   }
 
 }
+
 
 class Guard {
 
@@ -120,16 +133,19 @@ class Guard {
 
   public int[] getTimeMostAsleep() {
     List<String> times = this.generateSleepTime();
-    int[] result = new int[]{ 0, 0 };
+    int[] result = new int[] {0, 0};
 
     for (int m = 0; m < 60; m++) {
       int count = 0;
 
       for (String time : times) {
-        if (time.charAt(m) == '#') count++;
+        if (time.charAt(m) == '#')
+          count++;
       }
 
-      if (count > result[1]) result = new int[]{ m, count };
+      if (count > result[1]) {
+        result = new int[] {m, count};
+      }
     }
 
     return result;
@@ -197,11 +213,8 @@ class Guard {
 
   public void addWakeUps(LocalDateTime date) {
     List<LocalDateTime> dates = null;
-    String monthDay = new StringBuilder()
-      .append(date.getMonthValue())
-      .append("-")
-      .append(date.getDayOfMonth())
-      .toString();
+    String monthDay = new StringBuilder().append(date.getMonthValue()).append("-")
+        .append(date.getDayOfMonth()).toString();
 
     if (wakeUps.get(monthDay) == null) {
       dates = new ArrayList<>();
@@ -215,11 +228,8 @@ class Guard {
 
   public void addFallAsleeps(LocalDateTime date) {
     List<LocalDateTime> dates = null;
-    String monthDay = new StringBuilder()
-      .append(date.getMonthValue())
-      .append("-")
-      .append(date.getDayOfMonth())
-      .toString();
+    String monthDay = new StringBuilder().append(date.getMonthValue()).append("-")
+        .append(date.getDayOfMonth()).toString();
 
     if (fallAsleeps.get(monthDay) == null) {
       dates = new ArrayList<>();
