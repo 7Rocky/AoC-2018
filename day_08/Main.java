@@ -1,7 +1,6 @@
-package main;
+package day_08;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -16,17 +15,12 @@ public class Main {
   static List<Integer> numbers = null;
 
   public static void main(String[] args) {
-    BufferedReader bufferedReader = null;
-
-    try {
-      bufferedReader = new BufferedReader(new FileReader("input.txt"));
-    } catch (FileNotFoundException e) { }
-
-    try {
-      numbers = Arrays.stream(bufferedReader.readLine().split(" "))
-                      .map(Integer::parseInt)
-                      .collect(Collectors.toList());
-    } catch (IOException e) { }
+    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+      numbers = Arrays.stream(bufferedReader.readLine().split(" ")).map(Integer::parseInt)
+          .collect(Collectors.toList());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
     Node root = new Node();
     readHeaders(root, 0);
@@ -60,6 +54,7 @@ public class Main {
   }
 }
 
+
 class Node {
 
   private List<Node> childNodes = new ArrayList<>();
@@ -69,27 +64,21 @@ class Node {
     int sum = 0;
 
     if (!childNodes.isEmpty()) {
-      sum += childNodes.stream()
-                       .map(Node::sumMetadataEntries)
-                       .reduce(0, Integer::sum);
+      sum += childNodes.stream().map(Node::sumMetadataEntries).reduce(0, Integer::sum);
     }
 
-    sum += metadataEntries.stream()
-                          .reduce(0, Integer::sum);
+    sum += metadataEntries.stream().reduce(0, Integer::sum);
 
     return sum;
   }
 
   public int getValue() {
     if (childNodes.isEmpty()) {
-      return metadataEntries.stream()
-                            .reduce(0, Integer::sum);
+      return metadataEntries.stream().reduce(0, Integer::sum);
     }
 
-    return metadataEntries.stream()
-                          .filter(m -> m - 1 < childNodes.size())
-                          .map(m -> childNodes.get(m - 1).getValue())
-                          .reduce(0, Integer::sum);
+    return metadataEntries.stream().filter(m -> m - 1 < childNodes.size())
+        .map(m -> childNodes.get(m - 1).getValue()).reduce(0, Integer::sum);
   }
 
   public List<Node> getChildNodes() {
