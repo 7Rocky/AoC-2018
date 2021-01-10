@@ -5,6 +5,7 @@ Resolution of the problems in Java language:
 ```
 git clone https://github.com/7Rocky/AoC-2018
 cd AoC-2018/day_<number>
+
 java Main.java
 ```
 
@@ -18,3 +19,4 @@ java Main.java
 | [Day 06](day_06) | Chronal Coordinates                | :star::star::star:             |
 | [Day 07](day_07) | The Sum of Its Parts               | :star::star::star:             |
 | [Day 08](day_08) | Memory Maneuver                    | :star::star:                   |
+| [Day 09](day_09) | Marble Mania                       | :star::star:                   |
