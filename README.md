@@ -21,3 +21,4 @@ java Main.java
 | [Day 08](day_08) | Memory Maneuver                    | :star::star:                   |
 | [Day 09](day_09) | Marble Mania                       | :star::star:                   |
 | [Day 10](day_10) | The Stars Align                    | :star::star::star::star:       |
+| [Day 11](day_11) | Chronal Charge                     | :star::star:                   |
