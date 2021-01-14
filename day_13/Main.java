@@ -156,7 +156,7 @@ class Cart implements Comparable<Cart> {
 
   @Override
   public int hashCode() {
-    return new StringBuilder().append(x).append(y).toString().hashCode();
+    return this.toString().hashCode();
   }
 
   @Override
@@ -164,122 +164,42 @@ class Cart implements Comparable<Cart> {
     return y == cart.getY() ? x - cart.getX() : y - cart.getY();
   }
 
-  private void moveRight() {
-    char c = Main.map.get(y).charAt(x + 1);
+  private void abstractMove(int dx, int dy, char dirA, char dirB) {
+    char c = Main.map.get(y + dy).charAt(x + dx);
+
+    x += dx;
+    y += dy;
 
     switch (c) {
-      case '-':
-        x++;
-        break;
       case '/':
-        x++;
-        direction = 'U';
+        direction = dirA;
         break;
       case '\\':
-        x++;
-        direction = 'D';
+        direction = dirB;
         break;
       case '+':
-        x++;
         direction = this.getNextDirection();
         this.setNextIntersection();
         break;
       default:
-        System.exit(-1);
-    }
-  }
-
-  private void moveLeft() {
-    char c = Main.map.get(y).charAt(x - 1);
-
-    switch (c) {
-      case '-':
-        x--;
-        break;
-      case '/':
-        x--;
-        direction = 'D';
-        break;
-      case '\\':
-        x--;
-        direction = 'U';
-        break;
-      case '+':
-        x--;
-        direction = this.getNextDirection();
-        this.setNextIntersection();
-        break;
-      default:
-        System.exit(-1);
-    }
-  }
-
-  private void moveUp() {
-    char c = Main.map.get(y - 1).charAt(x);
-
-    switch (c) {
-      case '|':
-        y--;
-        break;
-      case '/':
-        y--;
-        direction = 'R';
-        break;
-      case '\\':
-        y--;
-        direction = 'L';
-        break;
-      case '+':
-        y--;
-        direction = this.getNextDirection();
-        this.setNextIntersection();
-        break;
-      default:
-        System.exit(-1);
-    }
-  }
-
-  private void moveDown() {
-    char c = Main.map.get(y + 1).charAt(x);
-
-    switch (c) {
-      case '|':
-        y++;
-        break;
-      case '/':
-        y++;
-        direction = 'L';
-        break;
-      case '\\':
-        y++;
-        direction = 'R';
-        break;
-      case '+':
-        y++;
-        direction = this.getNextDirection();
-        this.setNextIntersection();
-        break;
-      default:
-        System.exit(-1);
     }
   }
 
   public void move() {
     switch (direction) {
       case 'R':
-        this.moveRight();
+        this.abstractMove(+1, 0, 'U', 'D');
         break;
       case 'L':
-        this.moveLeft();
+        this.abstractMove(-1, 0, 'D', 'U');
         break;
       case 'U':
-        this.moveUp();
+        this.abstractMove(0, -1, 'R', 'L');
         break;
       case 'D':
-        this.moveDown();
+        this.abstractMove(0, +1, 'L', 'R');
         break;
       default:
-        System.exit(-1);
     }
   }
 
@@ -316,7 +236,7 @@ class Cart implements Comparable<Cart> {
   }
 
   public void setId() {
-    id = new StringBuilder().append(x).append(y).toString();
+    id = this.toString();
   }
 
   public void setCrashed(boolean crashed) {
