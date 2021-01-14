@@ -22,3 +22,4 @@ java Main.java
 | [Day 09](day_09) | Marble Mania                       | :star::star:                   |
 | [Day 10](day_10) | The Stars Align                    | :star::star::star::star:       |
 | [Day 11](day_11) | Chronal Charge                     | :star::star:                   |
+| [Day 12](day_12) | Subterranean Sustainability        | :star::star::star::star:       |
