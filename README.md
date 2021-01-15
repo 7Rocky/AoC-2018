@@ -2,11 +2,17 @@
 
 Resolution of the problems in Java language:
 
-```
+```bash
 git clone https://github.com/7Rocky/AoC-2018
 cd AoC-2018/day_<number>
 
 java Main.java
+```
+
+```bash
+cd AoC-2018
+
+make test
 ```
 
 | Problem          | Title                              | Difficulty                     |
