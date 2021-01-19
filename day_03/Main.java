@@ -2,6 +2,7 @@ package day_03;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,20 +12,10 @@ import java.util.regex.Pattern;
 
 public class Main {
 
-  public static int countOverlaps(List<String> fabric, char letter) {
-    int count = 0;
-
-    for (String row : fabric) {
-      count += (int) row.chars().filter(c -> c == letter).count();
-    }
-
-    return count;
-  }
-
   public static void main(String[] args) {
     List<Claim> claims = new ArrayList<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(line -> Main.setClaims(claims, line));
     } catch (IOException e) {
       e.printStackTrace();
@@ -68,8 +59,13 @@ public class Main {
     System.out.println(Main.findNonOverlapingClaimId(fabric, claims));
   }
 
+  public static int countOverlaps(List<String> fabric, char letter) {
+    return fabric.stream().map(r -> (int) r.chars().filter(c -> c == letter).count()).reduce(0,
+        Integer::sum);
+  }
+
   private static void setClaims(List<Claim> claims, String line) {
-    Pattern pattern = Pattern.compile("#(\\d+)\\s@\\s(\\d+),(\\d+):\\s(\\d+)x(\\d+)");
+    Pattern pattern = Pattern.compile("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)");
     Matcher matcher = pattern.matcher(line);
 
     while (matcher.find()) {
@@ -87,14 +83,10 @@ public class Main {
     for (Claim claim : claims) {
       for (int y = claim.getTop(); y < claim.getTop() + claim.getHeight(); y++) {
         String row = fabric.get(y);
-        StringBuilder newRow = new StringBuilder(row.substring(0, claim.getLeft()));
+        var newRow = new StringBuilder(row.substring(0, claim.getLeft()));
 
         for (int x = claim.getLeft(); x < claim.getLeft() + claim.getWidth(); x++) {
-          if (row.charAt(x) == '.') {
-            newRow.append('#');
-          } else {
-            newRow.append('X');
-          }
+          newRow.append(row.charAt(x) == '.' ? '#' : 'X');
         }
 
         newRow.append(row.substring(claim.getLeft() + claim.getWidth()));
