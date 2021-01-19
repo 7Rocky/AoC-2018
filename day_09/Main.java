@@ -19,7 +19,7 @@ public class Main {
   static int numRounds = 0;
 
   public static void main(String[] args) {
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       String input = bufferedReader.readLine();
 
       Pattern pattern = Pattern.compile("(\\d+) players; last marble is worth (\\d+) points");
@@ -39,8 +39,7 @@ public class Main {
 
     long maxScore = players.stream().map(Player::getScore).max(Long::compareTo).orElse(-1L);
 
-    System.out.print("Maximum score (1): ");
-    System.out.println(maxScore);
+    System.out.println("Maximum score (1): " + maxScore);
 
     numRounds *= 100;
 
@@ -50,8 +49,7 @@ public class Main {
 
     maxScore = players.stream().map(Player::getScore).max(Long::compareTo).orElse(-1L);
 
-    System.out.print("Maximum score (2): ");
-    System.out.println(maxScore);
+    System.out.println("Maximum score (2): " + maxScore);
   }
 
   private static void resetPlayers() {
@@ -109,7 +107,6 @@ public class Main {
 
           player.setScore(currentScore + round + removedMarbleNumber);
         }
-
 
         currentMarble = newMarble;
       }
