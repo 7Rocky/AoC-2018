@@ -20,7 +20,7 @@ public class Main {
 
   public static void main(String[] args) {
     try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
-      bufferedReader.lines().forEach(map::add);
+      bufferedReader.lines().forEach(Main.map::add);
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -83,8 +83,8 @@ public class Main {
   }
 
   private static void setCarts() {
-    for (int j = 0; j < map.size(); j++) {
-      String s = map.get(j);
+    for (int j = 0; j < Main.map.size(); j++) {
+      String s = Main.map.get(j);
 
       for (int i = 0; i < s.length(); i++) {
         char c = '-';
@@ -111,7 +111,7 @@ public class Main {
 
         if (isCart) {
           Main.carts.add(new Cart(i, j, direction));
-          map.set(j, s.substring(0, i) + c + s.substring(i + 1));
+          Main.map.set(j, s.substring(0, i) + c + s.substring(i + 1));
         }
       }
     }
