@@ -15,14 +15,14 @@ public class Main {
       e.printStackTrace();
     }
 
-    System.out.println("Units remaining (1): " + reactPolymer(new StringBuilder(polymer)).length());
+    System.out.println("Units remaining (1): " + Main.react(new StringBuilder(polymer)).length());
 
     int minLength = polymer.length();
 
     for (char c = 'A'; c <= 'Z'; c++) {
       String newPolymer = polymer.replaceAll("(?i)" + c, "");
 
-      int newLength = reactPolymer(new StringBuilder(newPolymer)).length();
+      int newLength = Main.react(new StringBuilder(newPolymer)).length();
 
       if (newLength < minLength) {
         minLength = newLength;
@@ -32,7 +32,7 @@ public class Main {
     System.out.println("Shortest polymer length (2): " + minLength);
   }
 
-  private static String reactPolymer(StringBuilder polymer) {
+  private static String react(StringBuilder polymer) {
     boolean removed = true;
     int lowerUpperDifference = 'a' - 'A';
 
