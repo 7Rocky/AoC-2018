@@ -19,7 +19,7 @@ public class Main {
   static TreeSet<Cart> carts = new TreeSet<>();
 
   public static void main(String[] args) {
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(map::add);
     } catch (IOException e) {
       e.printStackTrace();
@@ -43,11 +43,8 @@ public class Main {
       Main.reSortCarts();
     }
 
-    System.out.print("Position of first cart crash (1): ");
-    System.out.println(firstCrashPosition);
-
-    System.out.print("Position of last cart (2): ");
-    System.out.println(carts.first());
+    System.out.println("Position of first cart crash (1): " + firstCrashPosition);
+    System.out.println("Position of last cart (2): " + carts.first());
   }
 
   private static String getCrashPosition() {
@@ -90,31 +87,32 @@ public class Main {
       String s = map.get(j);
 
       for (int i = 0; i < s.length(); i++) {
-        if (s.charAt(i) == '<') {
-          Main.carts.add(new Cart(i, j, 'L'));
-          s = new StringBuilder(s.substring(0, i)).append("-").append(s.substring(i + 1))
-              .toString();
+        char c = '-';
+        Direction direction = Direction.LEFT;
+        boolean isCart = true;
+
+        switch (s.charAt(i)) {
+          case '<':
+            break;
+          case '>':
+            direction = Direction.RIGHT;
+            break;
+          case 'v':
+            c = '|';
+            direction = Direction.DOWN;
+            break;
+          case '^':
+            c = '|';
+            direction = Direction.UP;
+            break;
+          default:
+            isCart = false;
         }
 
-        if (s.charAt(i) == '>') {
-          Main.carts.add(new Cart(i, j, 'R'));
-          s = new StringBuilder(s.substring(0, i)).append("-").append(s.substring(i + 1))
-              .toString();
+        if (isCart) {
+          Main.carts.add(new Cart(i, j, direction));
+          map.set(j, s.substring(0, i) + c + s.substring(i + 1));
         }
-
-        if (s.charAt(i) == 'v') {
-          Main.carts.add(new Cart(i, j, 'D'));
-          s = new StringBuilder(s.substring(0, i)).append("|").append(s.substring(i + 1))
-              .toString();
-        }
-
-        if (s.charAt(i) == '^') {
-          Main.carts.add(new Cart(i, j, 'U'));
-          s = new StringBuilder(s.substring(0, i)).append("|").append(s.substring(i + 1))
-              .toString();
-        }
-
-        map.set(j, s);
       }
     }
   }
@@ -122,16 +120,21 @@ public class Main {
 }
 
 
+enum Direction {
+  RIGHT, LEFT, UP, DOWN
+}
+
+
 class Cart implements Comparable<Cart> {
 
   private int x;
   private int y;
-  private char direction;
+  private Direction direction;
   private String id;
   private boolean crashed = false;
-  private char nextIntersection = 'L';
+  private Direction nextIntersection = Direction.LEFT;
 
-  public Cart(int x, int y, char direction) {
+  public Cart(int x, int y, Direction direction) {
     this.setX(x);
     this.setY(y);
     this.setDirection(direction);
@@ -140,7 +143,7 @@ class Cart implements Comparable<Cart> {
 
   @Override
   public String toString() {
-    return new StringBuilder().append(x).append(",").append(y).toString();
+    return x + "," + y;
   }
 
   @Override
@@ -164,7 +167,7 @@ class Cart implements Comparable<Cart> {
     return y == cart.getY() ? x - cart.getX() : y - cart.getY();
   }
 
-  private void abstractMove(int dx, int dy, char dirA, char dirB) {
+  private void abstractMove(int dx, int dy, Direction dirA, Direction dirB) {
     char c = Main.map.get(y + dy).charAt(x + dx);
 
     x += dx;
@@ -187,19 +190,10 @@ class Cart implements Comparable<Cart> {
 
   public void move() {
     switch (direction) {
-      case 'R':
-        this.abstractMove(+1, 0, 'U', 'D');
-        break;
-      case 'L':
-        this.abstractMove(-1, 0, 'D', 'U');
-        break;
-      case 'U':
-        this.abstractMove(0, -1, 'R', 'L');
-        break;
-      case 'D':
-        this.abstractMove(0, +1, 'L', 'R');
-        break;
-      default:
+      case RIGHT -> this.abstractMove(+1, 0, Direction.UP, Direction.DOWN);
+      case LEFT -> this.abstractMove(-1, 0, Direction.DOWN, Direction.UP);
+      case UP -> this.abstractMove(0, -1, Direction.RIGHT, Direction.LEFT);
+      case DOWN -> this.abstractMove(0, +1, Direction.LEFT, Direction.RIGHT);
     }
   }
 
@@ -211,7 +205,7 @@ class Cart implements Comparable<Cart> {
     return y;
   }
 
-  public char getDirection() {
+  public Direction getDirection() {
     return direction;
   }
 
@@ -231,7 +225,7 @@ class Cart implements Comparable<Cart> {
     this.y = y;
   }
 
-  public void setDirection(char direction) {
+  public void setDirection(Direction direction) {
     this.direction = direction;
   }
 
@@ -243,28 +237,29 @@ class Cart implements Comparable<Cart> {
     this.crashed = crashed;
   }
 
-  public char getNextDirection() {
-    if (nextIntersection == 'U') {
+  public Direction getNextDirection() {
+    if (nextIntersection == Direction.UP) {
       return direction;
     }
 
-    if (direction == 'D') {
-      return nextIntersection == 'L' ? 'R' : 'L';
+    if (direction == Direction.DOWN) {
+      return nextIntersection == Direction.LEFT ? Direction.RIGHT : Direction.LEFT;
     }
 
-    if (direction == 'R') {
-      return nextIntersection == 'L' ? 'U' : 'D';
+    if (direction == Direction.RIGHT) {
+      return nextIntersection == Direction.LEFT ? Direction.UP : Direction.DOWN;
     }
 
-    if (direction == 'L') {
-      return nextIntersection == 'L' ? 'D' : 'U';
+    if (direction == Direction.LEFT) {
+      return nextIntersection == Direction.LEFT ? Direction.DOWN : Direction.UP;
     }
 
     return nextIntersection;
   }
 
   public void setNextIntersection() {
-    nextIntersection = nextIntersection == 'L' ? 'U' : nextIntersection == 'R' ? 'L' : 'R';
+    nextIntersection = nextIntersection == Direction.LEFT ? Direction.UP
+        : nextIntersection == Direction.RIGHT ? Direction.LEFT : Direction.RIGHT;
   }
 
 }
