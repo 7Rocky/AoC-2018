@@ -11,12 +11,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import java.util.stream.IntStream;
+
 public class Main {
 
   public static void main(String[] args) {
     List<String> boxIDs = new ArrayList<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(boxIDs::add);
     } catch (IOException e) {
       e.printStackTrace();
@@ -27,8 +29,7 @@ public class Main {
     int count2 = countIDWithOcurrences(boxIDLetterCounts, 2);
     int count3 = countIDWithOcurrences(boxIDLetterCounts, 3);
 
-    System.out.print("Checksum (1): ");
-    System.out.println(count2 * count3);
+    System.out.println("Checksum (1): " + count2 * count3);
 
     String commonLetters = "";
 
@@ -45,8 +46,7 @@ public class Main {
       }
     }
 
-    System.out.print("Common letters (2): ");
-    System.out.println(commonLetters);
+    System.out.println("Common letters (2): " + commonLetters);
   }
 
   private static List<Map<String, Integer>> getBoxIDLetterCounts(List<String> boxIDs) {
@@ -73,38 +73,26 @@ public class Main {
   }
 
   private static int countIDWithOcurrences(List<Map<String, Integer>> letterCounts, int number) {
-    int count = 0;
+    return letterCounts.stream()
+        .map(m -> m.values().stream().filter(n -> n == number).count() > 0 ? 1 : 0)
+        .reduce(0, Integer::sum);
+  }
 
-    for (Map<String, Integer> m : letterCounts) {
-      for (int n : m.values()) {
-        if (n == number) {
-          count++;
-          break;
-        }
-      }
-    }
-
-    return count;
+  private static int getShorterLength(String s1, String s2) {
+    return s1.length() < s2.length() ? s1.length() : s2.length();
   }
 
   private static int charDifference(String s1, String s2) {
-    int differences = 0;
-    int length = s1.length() < s2.length() ? s1.length() : s2.length();
+    long differences = IntStream.range(0, getShorterLength(s1, s2))
+        .filter(i -> s1.charAt(i) != s2.charAt(i)).count();
 
-    for (int i = 0; i < length; i++) {
-      if (s1.charAt(i) != s2.charAt(i)) {
-        differences++;
-      }
-    }
-
-    return differences + Math.abs(s1.length() - s2.length());
+    return (int) differences + Math.abs(s1.length() - s2.length());
   }
 
   private static String getCommonLetters(String s1, String s2) {
-    StringBuilder commonLetters = new StringBuilder();
-    int length = s1.length() < s2.length() ? s1.length() : s2.length();
+    var commonLetters = new StringBuilder();
 
-    for (int i = 0; i < length; i++) {
+    for (int i = 0; i < getShorterLength(s1, s2); i++) {
       if (s1.charAt(i) == s2.charAt(i)) {
         commonLetters.append(s1.charAt(i));
       }
