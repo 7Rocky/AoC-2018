@@ -60,8 +60,7 @@ public class Main {
   }
 
   public static int countOverlaps(List<String> fabric, char letter) {
-    return fabric.stream().map(r -> (int) r.chars().filter(c -> c == letter).count()).reduce(0,
-        Integer::sum);
+    return fabric.stream().mapToInt(r -> (int) r.chars().filter(c -> c == letter).count()).sum();
   }
 
   private static void setClaims(List<Claim> claims, String line) {
