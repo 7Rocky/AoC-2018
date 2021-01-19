@@ -4,73 +4,51 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class Main {
 
-  static Pattern pattern = null;
-
-  public static void main(final String[] args) {
+  public static void main(String[] args) {
     String polymer = "";
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       polymer = bufferedReader.readLine();
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    System.out.print("Units remaining (1): ");
-    System.out.println(reactPolymer(polymer).length());
+    System.out.println("Units remaining (1): " + reactPolymer(new StringBuilder(polymer)).length());
 
     int minLength = polymer.length();
 
     for (char c = 'A'; c <= 'Z'; c++) {
-      String newPolymer =
-          polymer.replace(String.valueOf(c), "").replace(String.valueOf((char) (c + 32)), "");
+      String newPolymer = polymer.replaceAll("(?i)" + c, "");
 
-      int newLength = reactPolymer(newPolymer).length();
+      int newLength = reactPolymer(new StringBuilder(newPolymer)).length();
 
       if (newLength < minLength) {
         minLength = newLength;
       }
     }
 
-    System.out.print("Shortest polymer length (2): ");
-    System.out.println(minLength);
+    System.out.println("Shortest polymer length (2): " + minLength);
   }
 
-  private static Pattern generatePattern() {
-    if (pattern != null) {
-      return pattern;
-    }
+  private static String reactPolymer(StringBuilder polymer) {
+    boolean removed = true;
+    int lowerUpperDifference = 'a' - 'A';
 
-    StringBuilder patternString = new StringBuilder("(");
+    while (removed) {
+      removed = false;
 
-    for (char c = 'A'; c <= 'Z'; c++) {
-      if (c != 'A') {
-        patternString.append('|');
+      for (int i = 1; i < polymer.length(); i++) {
+        if ((polymer.charAt(i - 1) ^ polymer.charAt(i)) == lowerUpperDifference) {
+          polymer.delete(i - 1, i + 1);
+          removed = true;
+          break;
+        }
       }
-
-      patternString.append(c).append((char) (c + 32)).append('|').append((char) (c + 32)).append(c);
     }
 
-    patternString.append(')');
-
-    pattern = Pattern.compile(patternString.toString());
-
-    return pattern;
-  }
-
-  private static String reactPolymer(String polymer) {
-    Matcher matcher = Main.generatePattern().matcher(polymer);
-
-    while (matcher.find()) {
-      polymer = polymer.replace(matcher.group(1), "");
-      matcher = pattern.matcher(polymer);
-    }
-
-    return polymer;
+    return polymer.toString();
   }
 
 }
