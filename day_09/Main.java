@@ -33,9 +33,9 @@ public class Main {
       e.printStackTrace();
     }
 
-    resetPlayers();
-    resetMarblesCircle();
-    play();
+    Main.resetPlayers();
+    Main.resetMarblesCircle();
+    Main.play();
 
     long maxScore = players.stream().map(Player::getScore).max(Long::compareTo).orElse(-1L);
 
@@ -43,9 +43,9 @@ public class Main {
 
     numRounds *= 100;
 
-    resetPlayers();
-    resetMarblesCircle();
-    play();
+    Main.resetPlayers();
+    Main.resetMarblesCircle();
+    Main.play();
 
     maxScore = players.stream().map(Player::getScore).max(Long::compareTo).orElse(-1L);
 
