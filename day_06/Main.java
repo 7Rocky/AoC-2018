@@ -62,7 +62,7 @@ public class Main {
     for (int x = min; x <= max; x++) {
       for (int y = min; y <= max; y++) {
         Coordinate coordinate = new Coordinate(x, y);
-        int totalDistance = coordinates.stream().map(coordinate::distance).reduce(0, Integer::sum);
+        int totalDistance = coordinates.stream().mapToInt(coordinate::distance).sum();
 
         if (minimumDistance > totalDistance)
           safeArea++;
