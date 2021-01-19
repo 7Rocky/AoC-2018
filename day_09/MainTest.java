@@ -25,16 +25,21 @@ public class MainTest {
   static String answer2 = "Maximum score (2): 3352920421";
 
   public static void main(String[] args) {
+    if (args.length == 1 && args[0].equals("time")) {
+      System.out.println(Calendar.getInstance().getTimeInMillis());
+      return;
+    }
+
     List<String> outputs = new ArrayList<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("output.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("output.txt"))) {
       bufferedReader.lines().forEach(outputs::add);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    int init = Integer.parseInt(outputs.get(0));
-    double time = Calendar.getInstance().getTimeInMillis() / 1000.0 - init;
+    long init = Long.parseLong(outputs.get(0));
+    double time = (Calendar.getInstance().getTimeInMillis() - init) / 1000.0;
 
     boolean pass = true;
 
@@ -52,19 +57,17 @@ public class MainTest {
   }
 
   private static String getPassMessage() {
-    return new StringBuilder(WHITE_BOLD_BRIGHT).append(GREEN_BACKGROUND).append(" PASS ")
-        .append(RESET).toString();
+    return WHITE_BOLD_BRIGHT + GREEN_BACKGROUND + " PASS " + RESET;
   }
 
   private static String getFailMessage() {
-    return new StringBuilder(WHITE_BOLD_BRIGHT).append(RED_BACKGROUND).append(" FAIL ")
-        .append(RESET).toString();
+    return WHITE_BOLD_BRIGHT + RED_BACKGROUND + " FAIL " + RESET;
   }
 
   private static String getTimeMessage(double time) {
-    return String.format(new StringBuilder(WHITE_BOLD_BRIGHT).append(" Time ")
-        .append(time < 3 ? GREEN_BOLD_BRIGHT : time < 20 ? YELLOW_BOLD_BRIGHT : RED_BOLD_BRIGHT)
-        .append(" %.3f s").append(RESET).toString(), time).replace(',', '.');
+    return WHITE_BOLD_BRIGHT + " Time "
+        + (time < 3 ? GREEN_BOLD_BRIGHT : time < 20 ? YELLOW_BOLD_BRIGHT : RED_BOLD_BRIGHT)
+        + String.format(" %.3f s" + RESET, time).replace(',', '.');
   }
 
 }
