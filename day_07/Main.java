@@ -20,7 +20,7 @@ public class Main {
     Map<String, Step> steps1 = new HashMap<>();
     Map<String, Step> steps2 = new HashMap<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(line -> {
         setSteps(steps1, line);
         setSteps(steps2, line);
@@ -30,7 +30,7 @@ public class Main {
     }
 
     int totalSteps = steps1.size();
-    StringBuilder doneSteps1 = new StringBuilder();
+    var doneSteps1 = new StringBuilder();
 
     while (doneSteps1.length() < totalSteps) {
       Step step = nextStep(steps1);
@@ -39,8 +39,7 @@ public class Main {
       removeStep(step.getId(), steps1);
     }
 
-    System.out.print("Steps order (1): ");
-    System.out.println(doneSteps1);
+    System.out.println("Steps order (1): " + doneSteps1);
 
     List<Worker> workers = new ArrayList<>();
 
@@ -49,7 +48,7 @@ public class Main {
     }
 
     int seconds = 0;
-    StringBuilder doneSteps2 = new StringBuilder();
+    var doneSteps2 = new StringBuilder();
 
     while (doneSteps2.length() != totalSteps
         || workers.stream().filter(Worker::isIdle).count() != Worker.NUM_WORKERS) {
@@ -69,13 +68,12 @@ public class Main {
       seconds++;
     }
 
-    System.out.print("Elapsed seconds (2): ");
-    System.out.println(seconds);
+    System.out.println("Elapsed seconds (2): " + seconds);
   }
 
   private static void setSteps(Map<String, Step> steps, String line) {
-    Pattern pattern = Pattern
-        .compile("Step\\s(\\w+)\\smust\\sbe\\sfinished\\sbefore\\sstep\\s(\\w+)\\scan\\sbegin\\.");
+    Pattern pattern =
+        Pattern.compile("Step (\\w+) must be finished before step (\\w+) can begin\\.");
 
     Matcher matcher = pattern.matcher(line);
 
