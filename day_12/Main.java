@@ -18,7 +18,7 @@ public class Main {
   static Map<String, String> changes = new TreeMap<>();
 
   public static void main(String[] args) {
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(Main::setPoints);
     } catch (IOException e) {
       e.printStackTrace();
@@ -78,8 +78,8 @@ public class Main {
   }
 
   private static String nextGeneration(String state) {
-    state = new StringBuilder("...").append(state).append("...").toString();
-    StringBuilder next = new StringBuilder();
+    state = "..." + state + "...";
+    var next = new StringBuilder();
 
     for (int i = 0; i < state.length() - 4; i++) {
       next.append(changes.get(state.substring(i, i + 5)));
