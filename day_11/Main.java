@@ -14,10 +14,10 @@ public class Main {
     Main.setPowers();
 
     System.out.print("Top-right corner of 3x3 grid with max power (1): ");
-    System.out.println(getMaxPowerPosition(3));
+    System.out.println(Main.getMaxPowerPosition(3));
 
     System.out.print("Top-right corner identifier of grid with max power (2): ");
-    System.out.println(getMaxPowerPosition());
+    System.out.println(Main.getMaxPowerPosition());
   }
 
   private static int getPower(int x, int y) {
@@ -29,10 +29,10 @@ public class Main {
       List<Integer> row = new ArrayList<>();
 
       for (int x = 1; x <= Main.DIM; x++) {
-        row.add(getPower(x, y));
+        row.add(Main.getPower(x, y));
       }
 
-      powers.add(row);
+      Main.powers.add(row);
     }
   }
 
@@ -54,7 +54,7 @@ public class Main {
 
     for (int i = 1; i <= Main.DIM - 2; i++) {
       for (int j = 1; j <= Main.DIM - 2; j++) {
-        int power = getGridPower(i, j, gridSize);
+        int power = Main.getGridPower(i, j, gridSize);
 
         if (power > maxPower) {
           maxPower = power;
@@ -63,7 +63,7 @@ public class Main {
       }
     }
 
-    return getPositionString(grid[0], grid[1]);
+    return Main.getPositionString(grid[0], grid[1]);
   }
 
   private static int getGridPower(int i, int j, int d, int lastPowerGrid) {
@@ -88,8 +88,8 @@ public class Main {
       for (int j = 1; j <= Main.DIM; j++) {
         int power = 0;
 
-        for (int d = 1; d <= getMaxGridDimension(i, j); d++) {
-          power = getGridPower(i, j, d, power);
+        for (int d = 1; d <= Main.getMaxGridDimension(i, j); d++) {
+          power = Main.getGridPower(i, j, d, power);
 
           if (power > maxPower) {
             maxPower = power;
@@ -99,7 +99,7 @@ public class Main {
       }
     }
 
-    return getPositionString(grid[0], grid[1], grid[2]);
+    return Main.getPositionString(grid[0], grid[1], grid[2]);
   }
 
   private static int getMaxGridDimension(int i, int j) {
