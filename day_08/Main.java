@@ -15,7 +15,7 @@ public class Main {
   static List<Integer> numbers = null;
 
   public static void main(String[] args) {
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       numbers = Arrays.stream(bufferedReader.readLine().split(" ")).map(Integer::parseInt)
           .collect(Collectors.toList());
     } catch (IOException e) {
@@ -25,11 +25,8 @@ public class Main {
     Node root = new Node();
     readHeaders(root, 0);
 
-    System.out.print("Sum of metadata entries (1): ");
-    System.out.println(root.sumMetadataEntries());
-
-    System.out.print("Value of root node (2): ");
-    System.out.println(root.getValue());
+    System.out.println("Sum of metadata entries (1): " + root.sumMetadataEntries());
+    System.out.println("Value of root node (2): " + root.getValue());
   }
 
   private static int readHeaders(Node node, int index) {
@@ -48,10 +45,9 @@ public class Main {
       node.addMetadataEntry(numbers.get(i));
     }
 
-    index += numMetadataEntries;
-
-    return index;
+    return index + numMetadataEntries;
   }
+
 }
 
 
@@ -67,9 +63,7 @@ class Node {
       sum += childNodes.stream().map(Node::sumMetadataEntries).reduce(0, Integer::sum);
     }
 
-    sum += metadataEntries.stream().reduce(0, Integer::sum);
-
-    return sum;
+    return sum + metadataEntries.stream().reduce(0, Integer::sum);
   }
 
   public int getValue() {
