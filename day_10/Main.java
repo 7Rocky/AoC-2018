@@ -20,7 +20,7 @@ public class Main {
   static List<Point> points = new ArrayList<>();
 
   public static void main(String[] args) {
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(Main::setPoints);
     } catch (IOException e) {
       e.printStackTrace();
@@ -74,7 +74,7 @@ public class Main {
 
       Main.putPoints(printablePoints, grid, minX, maxX, minY);
 
-      System.out.println(new StringBuilder("Time (2): ").append(time).append("\n\nWord (1):\n"));
+      System.out.println("Time (2): " + time + "\n\nWord (1):\n");
 
       grid.stream().filter(Predicate.not(String::isEmpty)).forEach(System.out::println);
     }
@@ -134,7 +134,7 @@ class Point {
 
   @Override
   public int hashCode() {
-    return new StringBuilder().append(position.toString()).append(velocity.toString()).hashCode();
+    return (position.toString() + velocity.toString()).hashCode();
   }
 
   public int countSurroundingPoints(List<Point> points, int distance) {
