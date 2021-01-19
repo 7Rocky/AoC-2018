@@ -22,8 +22,8 @@ public class Main {
 
     try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(line -> {
-        setSteps(steps1, line);
-        setSteps(steps2, line);
+        Main.setSteps(steps1, line);
+        Main.setSteps(steps2, line);
       });
     } catch (IOException e) {
       e.printStackTrace();
@@ -33,10 +33,10 @@ public class Main {
     var doneSteps1 = new StringBuilder();
 
     while (doneSteps1.length() < totalSteps) {
-      Step step = nextStep(steps1);
+      Step step = Main.nextStep(steps1);
       step.setDone(true);
       doneSteps1.append(step.getId());
-      removeStep(step.getId(), steps1);
+      Main.removeStep(step.getId(), steps1);
     }
 
     System.out.println("Steps order (1): " + doneSteps1);
@@ -53,7 +53,7 @@ public class Main {
     while (doneSteps2.length() != totalSteps
         || workers.stream().filter(Worker::isIdle).count() != Worker.NUM_WORKERS) {
 
-      TreeSet<String> possibleSteps = (TreeSet<String>) nextSteps(steps2);
+      TreeSet<String> possibleSteps = (TreeSet<String>) Main.nextSteps(steps2);
 
       for (String step : possibleSteps) {
         workers.stream().filter(Worker::isIdle).forEach(worker -> {
@@ -98,7 +98,7 @@ public class Main {
   }
 
   private static Step nextStep(Map<String, Step> steps) {
-    return steps.get(nextSteps(steps).first());
+    return steps.get(Main.nextSteps(steps).first());
   }
 
   public static void removeStep(String id, Map<String, Step> steps) {
