@@ -23,7 +23,7 @@ public class Main {
     }
 
     Node root = new Node();
-    readHeaders(root, 0);
+    Main.readHeaders(root, 0);
 
     System.out.println("Sum of metadata entries (1): " + root.sumMetadataEntries());
     System.out.println("Value of root node (2): " + root.getValue());
@@ -37,7 +37,7 @@ public class Main {
 
     for (int i = 0; i < numChildNodes; i++) {
       Node childNode = new Node();
-      index = readHeaders(childNode, index);
+      index = Main.readHeaders(childNode, index);
       node.addChildNode(childNode);
     }
 
@@ -60,10 +60,10 @@ class Node {
     int sum = 0;
 
     if (!childNodes.isEmpty()) {
-      sum += childNodes.stream().map(Node::sumMetadataEntries).reduce(0, Integer::sum);
+      sum += childNodes.stream().mapToInt(Node::sumMetadataEntries).sum();
     }
 
-    return sum + metadataEntries.stream().reduce(0, Integer::sum);
+    return sum + metadataEntries.stream().mapToInt(m -> m).sum();
   }
 
   public int getValue() {
@@ -72,7 +72,7 @@ class Node {
     }
 
     return metadataEntries.stream().filter(m -> m - 1 < childNodes.size())
-        .map(m -> childNodes.get(m - 1).getValue()).reduce(0, Integer::sum);
+        .mapToInt(m -> childNodes.get(m - 1).getValue()).sum();
   }
 
   public List<Node> getChildNodes() {
