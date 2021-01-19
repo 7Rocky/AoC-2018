@@ -37,7 +37,7 @@ public class Main {
         continue;
       }
 
-      setGuardsSleepingTime(guards, id, line);
+      Main.setGuardsSleepingTime(guards, id, line);
     }
 
     int max = 0;
@@ -156,8 +156,7 @@ class Guard {
   public int getMinutesAsleep() {
     List<String> times = this.generateSleepTime();
 
-    return times.stream().map(t -> (int) t.chars().filter(c -> c == '#').count()).reduce(0,
-        Integer::sum);
+    return times.stream().mapToInt(t -> (int) t.chars().filter(c -> c == '#').count()).sum();
   }
 
   private List<String> generateSleepTime() {
