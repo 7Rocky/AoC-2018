@@ -26,8 +26,8 @@ public class Main {
 
     List<Map<String, Integer>> boxIDLetterCounts = Main.getBoxIDLetterCounts(boxIDs);
 
-    int count2 = countIDWithOcurrences(boxIDLetterCounts, 2);
-    int count3 = countIDWithOcurrences(boxIDLetterCounts, 3);
+    int count2 = Main.countIDWithOcurrences(boxIDLetterCounts, 2);
+    int count3 = Main.countIDWithOcurrences(boxIDLetterCounts, 3);
 
     System.out.println("Checksum (1): " + count2 * count3);
 
@@ -35,8 +35,8 @@ public class Main {
 
     for (String id1 : boxIDs) {
       for (String id2 : boxIDs) {
-        if (!id1.equals(id2) && charDifference(id1, id2) == 1) {
-          commonLetters = getCommonLetters(id1, id2);
+        if (!id1.equals(id2) && Main.charDifference(id1, id2) == 1) {
+          commonLetters = Main.getCommonLetters(id1, id2);
           break;
         }
       }
@@ -74,8 +74,7 @@ public class Main {
 
   private static int countIDWithOcurrences(List<Map<String, Integer>> letterCounts, int number) {
     return letterCounts.stream()
-        .map(m -> m.values().stream().filter(n -> n == number).count() > 0 ? 1 : 0)
-        .reduce(0, Integer::sum);
+        .mapToInt(m -> m.values().stream().filter(n -> n == number).count() > 0 ? 1 : 0).sum();
   }
 
   private static int getShorterLength(String s1, String s2) {
@@ -83,7 +82,7 @@ public class Main {
   }
 
   private static int charDifference(String s1, String s2) {
-    long differences = IntStream.range(0, getShorterLength(s1, s2))
+    long differences = IntStream.range(0, Main.getShorterLength(s1, s2))
         .filter(i -> s1.charAt(i) != s2.charAt(i)).count();
 
     return (int) differences + Math.abs(s1.length() - s2.length());
@@ -92,7 +91,7 @@ public class Main {
   private static String getCommonLetters(String s1, String s2) {
     var commonLetters = new StringBuilder();
 
-    for (int i = 0; i < getShorterLength(s1, s2); i++) {
+    for (int i = 0; i < Main.getShorterLength(s1, s2); i++) {
       if (s1.charAt(i) == s2.charAt(i)) {
         commonLetters.append(s1.charAt(i));
       }
