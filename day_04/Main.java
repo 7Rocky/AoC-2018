@@ -3,6 +3,7 @@ package day_04;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class Main {
   public static void main(String[] args) {
     Set<String> sortedLines = new TreeSet<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(sortedLines::add);
     } catch (IOException e) {
       e.printStackTrace();
@@ -95,7 +96,7 @@ public class Main {
   }
 
   private static void setGuardsSleepingTime(Map<Integer, Guard> guards, int id, String line) {
-    Pattern patternDate = Pattern.compile("\\[(\\d+)-(\\d+)-(\\d+)\\s(\\d+):(\\d+)\\]");
+    Pattern patternDate = Pattern.compile("\\[(\\d+)-(\\d+)-(\\d+) (\\d+):(\\d+)\\]");
     Matcher matcher = patternDate.matcher(line);
 
     while (matcher.find()) {
@@ -139,8 +140,9 @@ class Guard {
       int count = 0;
 
       for (String time : times) {
-        if (time.charAt(m) == '#')
+        if (time.charAt(m) == '#') {
           count++;
+        }
       }
 
       if (count > result[1]) {
@@ -153,20 +155,16 @@ class Guard {
 
   public int getMinutesAsleep() {
     List<String> times = this.generateSleepTime();
-    int minutes = 0;
 
-    for (String time : times) {
-      minutes += (int) time.chars().filter(c -> c == '#').count();
-    }
-
-    return minutes;
+    return times.stream().map(t -> (int) t.chars().filter(c -> c == '#').count()).reduce(0,
+        Integer::sum);
   }
 
   private List<String> generateSleepTime() {
     List<String> times = new ArrayList<>();
 
     for (String monthDay : wakeUps.keySet()) {
-      StringBuilder time = new StringBuilder();
+      var time = new StringBuilder();
 
       List<LocalDateTime> wus = wakeUps.get(monthDay);
       List<LocalDateTime> fas = fallAsleeps.get(monthDay);
@@ -213,8 +211,7 @@ class Guard {
 
   public void addWakeUps(LocalDateTime date) {
     List<LocalDateTime> dates = null;
-    String monthDay = new StringBuilder().append(date.getMonthValue()).append("-")
-        .append(date.getDayOfMonth()).toString();
+    String monthDay = date.getMonthValue() + "-" + date.getDayOfMonth();
 
     if (wakeUps.get(monthDay) == null) {
       dates = new ArrayList<>();
@@ -228,8 +225,7 @@ class Guard {
 
   public void addFallAsleeps(LocalDateTime date) {
     List<LocalDateTime> dates = null;
-    String monthDay = new StringBuilder().append(date.getMonthValue()).append("-")
-        .append(date.getDayOfMonth()).toString();
+    String monthDay = date.getMonthValue() + "-" + date.getDayOfMonth();
 
     if (fallAsleeps.get(monthDay) == null) {
       dates = new ArrayList<>();
