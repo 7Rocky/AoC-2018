@@ -15,11 +15,11 @@ import java.util.regex.Pattern;
 public class Main {
 
   public static void main(String[] args) {
-    Pattern pattern = Pattern.compile("(\\d+),\\s(\\d+)");
+    Pattern pattern = Pattern.compile("(\\d+), (\\d+)");
 
     List<Coordinate> coordinates = new ArrayList<>();
 
-    try (BufferedReader bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
+    try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(line -> {
         Matcher matcher = pattern.matcher(line);
 
@@ -33,8 +33,6 @@ public class Main {
     } catch (IOException e) {
       e.printStackTrace();
     }
-
-
 
     int max = coordinates.stream().map(Coordinate::getX).max(Integer::compareTo).orElse(-1);
     int min = coordinates.stream().map(Coordinate::getX).min(Integer::compareTo).orElse(-1);
@@ -56,8 +54,7 @@ public class Main {
 
     int largestSize = closestAreas.values().stream().max(Integer::compareTo).orElse(-1);
 
-    System.out.print("Size of the largest area (1): ");
-    System.out.println(largestSize);
+    System.out.println("Size of the largest area (1): " + largestSize);
 
     int minimumDistance = 10000;
     int safeArea = 0;
@@ -72,8 +69,7 @@ public class Main {
       }
     }
 
-    System.out.print("Size of the safe area (2): ");
-    System.out.println(safeArea);
+    System.out.println("Size of the safe area (2): " + safeArea);
   }
 
 }
@@ -131,7 +127,7 @@ class Coordinate {
 
   @Override
   public int hashCode() {
-    return new StringBuilder().append(x).append(y).toString().hashCode();
+    return (x + "," + y).hashCode();
   }
 
   public int getX() {
