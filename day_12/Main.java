@@ -33,7 +33,7 @@ public class Main {
 
   private static void setPoints(String line) {
     if (line.contains("initial state: ")) {
-      initialState = line.substring("initial state: ".length());
+      Main.initialState = line.substring("initial state: ".length());
       return;
     }
 
@@ -82,7 +82,7 @@ public class Main {
     var next = new StringBuilder();
 
     for (int i = 0; i < state.length() - 4; i++) {
-      next.append(changes.get(state.substring(i, i + 5)));
+      next.append(Main.changes.get(state.substring(i, i + 5)));
     }
 
     return next.toString();
@@ -95,8 +95,7 @@ public class Main {
       numbers.add(i);
     }
 
-    return numbers.stream().filter(n -> state.charAt(n) == pot).map(n -> n - offset).reduce(0,
-        Integer::sum);
+    return numbers.stream().filter(n -> state.charAt(n) == pot).mapToInt(n -> n - offset).sum();
   }
 
 }
