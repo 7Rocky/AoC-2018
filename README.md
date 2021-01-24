@@ -30,3 +30,4 @@ make test
 | [Day 11](day_11) | Chronal Charge                     | :star::star:                   |
 | [Day 12](day_12) | Subterranean Sustainability        | :star::star::star::star:       |
 | [Day 13](day_13) | Mine Cart Madness                  | :star::star::star::star::star: |
+| [Day 14](day_14) | Chocolate Charts                   | :star::star::star:             |
