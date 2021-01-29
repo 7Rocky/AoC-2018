@@ -59,29 +59,30 @@ public class Main {
     int rounds = 0;
     int numElves = (int) Main.units.stream().filter(Unit::isElf).count();
 
-    while (!Main.units.stream().allMatch(Unit::isGoblin)
-        && !Main.units.stream().allMatch(Unit::isElf)) {
-
+    while (!Main.allGoblins() && !Main.allElves()) {
       boolean isLast = Main.lifecycle();
       Main.reSortUnits();
 
-      if (!isLast && (Main.units.stream().allMatch(Unit::isGoblin)
-          || Main.units.stream().allMatch(Unit::isElf))) {
-
+      if (!isLast && (Main.allGoblins() || Main.allElves())) {
         break;
       }
 
       rounds++;
     }
 
-    if (level == 2
-        && (!Main.units.stream().allMatch(Unit::isElf) || Main.units.size() != numElves)) {
-
+    if (level == 2 && (!Main.allElves() || Main.units.size() != numElves)) {
       return -1;
     }
 
     return rounds * Main.units.stream().mapToInt(Unit::getHp).sum();
+  }
 
+  private static boolean allGoblins() {
+    return Main.units.stream().filter(Unit::isAlive).allMatch(Unit::isGoblin);
+  }
+
+  private static boolean allElves() {
+    return Main.units.stream().filter(Unit::isAlive).allMatch(Unit::isElf);
   }
 
   private static void setConfiguration(String line) {
@@ -90,13 +91,13 @@ public class Main {
     int elfX = line.indexOf('E');
 
     while (goblinX != -1) {
-      Main.units.add(new Goblin(goblinX, y));
+      Main.units.add(new Goblin(new Point(goblinX, y)));
       line = line.substring(0, goblinX) + "." + line.substring(goblinX + 1);
       goblinX = line.indexOf('G');
     }
 
     while (elfX != -1) {
-      Main.units.add(new Elf(elfX, y));
+      Main.units.add(new Elf(new Point(elfX, y)));
       line = line.substring(0, elfX) + "." + line.substring(elfX + 1);
       elfX = line.indexOf('E');
     }
@@ -109,15 +110,13 @@ public class Main {
 
     for (Unit unit : Main.units) {
       if (unit.isAlive()) {
-        unit.setTarget();
+        unit.calculateTarget();
         unit.move();
       }
 
       isLast = unit.equals(Main.units.last());
 
-      if (Main.units.stream().filter(Unit::isAlive).allMatch(Unit::isGoblin)
-          || Main.units.stream().filter(Unit::isAlive).allMatch(Unit::isElf)) {
-
+      if (Main.allGoblins() || Main.allElves()) {
         break;
       }
     }
@@ -132,49 +131,56 @@ public class Main {
   }
 
   public static void getFirstUnit(Unit unit, SortedSet<Unit> enemies) {
-    int[] best = new int[] {0, 0, Integer.MAX_VALUE};
+    Point best = new Point(0, 0, Integer.MAX_VALUE);
     boolean found = false;
 
     for (Unit enemy : enemies) {
-      int[] optimal = Main.breadthFirstSearch(unit, enemy);
+      Point optimal = Main.breadthFirstSearch(unit, enemy);
 
-      if (optimal[0] != -1 && optimal[1] != -1 && optimal[2] != -1) {
+      if (!optimal.equals(new Point(-1, -1))) {
         found = true;
 
-        if (best[2] > optimal[2]) {
+        if (best.getSteps() > optimal.getSteps()) {
           best = optimal;
         }
 
-        if (unit.getX() == optimal[0] && unit.getY() == optimal[1] && optimal[2] == 0) {
+        if (optimal.equals(unit.getPosition()) && optimal.getSteps() == 0) {
           best = optimal;
           break;
         }
       }
     }
 
-    unit.setTarget(found ? new int[] {best[0], best[1]} : null);
+    unit.setTarget(found ? best : null);
   }
 
-  public static List<Integer[]> getAdjacentPoints(int x, int y) {
-    return Arrays.asList(new Integer[] {x, y - 1, 0}, new Integer[] {x - 1, y, 0},
-        new Integer[] {x + 1, y, 0}, new Integer[] {x, y + 1, 0});
+  public static List<Point> getAdjacentPoints(Point point) {
+    int x = point.getX();
+    int y = point.getY();
+
+    return Arrays.asList(new Point(x, y - 1), new Point(x - 1, y), new Point(x + 1, y),
+        new Point(x, y + 1));
   }
 
-  private static int[] breadthFirstSearch(Unit orig, Unit dest) {
-    Integer[] point = new Integer[] {orig.getX(), orig.getY(), 0};
+  public static boolean isEmptySpace(Point point) {
+    return Main.map.get(point.getY()).charAt(point.getX()) == '.';
+  }
 
-    int[] optimal = new int[] {-1, -1, -1};
+  private static Point breadthFirstSearch(Unit orig, Unit dest) {
+    Point point = new Point(orig.getPosition().getX(), orig.getPosition().getY());
+
+    Point optimal = new Point(-1, -1);
     int minSteps = Integer.MAX_VALUE;
 
-    for (Integer[] e : Main.getAdjacentPoints(dest.getX(), dest.getY())) {
-      if (Main.map.get(e[1]).charAt(e[0]) == '.' && Main.units.stream().filter(Unit::isAlive)
-          .noneMatch(u -> !u.equals(orig) && u.getX() == e[0] && u.getY() == e[1])) {
+    for (Point p : Main.getAdjacentPoints(dest.getPosition())) {
+      if (Main.isEmptySpace(p) && Main.units.stream().filter(Unit::isAlive)
+          .noneMatch(u -> !u.equals(orig) && p.equals(u.getPosition()))) {
 
-        int steps = Main.breadthFirstSearch(point, e);
+        int steps = Main.breadthFirstSearch(point, p);
 
         if (minSteps > steps) {
           minSteps = steps;
-          optimal = new int[] {e[0], e[1], minSteps};
+          optimal = new Point(p.getX(), p.getY(), minSteps);
         }
       }
     }
@@ -182,28 +188,24 @@ public class Main {
     return optimal;
   }
 
-  public static int breadthFirstSearch(Integer[] orig, Integer[] dest) {
-    Set<String> visited = new HashSet<>();
-    LinkedList<Integer[]> queue = new LinkedList<>();
+  public static int breadthFirstSearch(Point orig, Point dest) {
+    Set<Point> visited = new HashSet<>();
+    LinkedList<Point> queue = new LinkedList<>();
 
-    visited.add(orig[0] + "," + orig[1]);
+    visited.add(orig);
     queue.add(orig);
 
-    Integer[] node = null;
-
     while (!queue.isEmpty()) {
-      node = queue.poll();
+      Point node = queue.poll();
 
-      if (node[0].equals(dest[0]) && node[1].equals(dest[1])) {
-        return node[2];
+      if (node.equals(dest)) {
+        return node.getSteps();
       }
 
-      for (Integer[] next : Main.getPossiblePositions(node)) {
-        String nextString = next[0] + "," + next[1];
-
-        if (!visited.contains(nextString)) {
-          next[2] = node[2] + 1;
-          visited.add(nextString);
+      for (Point next : Main.getPossiblePositions(node)) {
+        if (!visited.contains(next)) {
+          next.setSteps(node.getSteps() + 1);
+          visited.add(next);
           queue.add(next);
         }
       }
@@ -212,15 +214,19 @@ public class Main {
     return Integer.MAX_VALUE;
   }
 
-  private static List<Integer[]> getPossiblePositions(Integer[] pos) {
-    List<Integer[]> positions = new ArrayList<>();
+  public static boolean isAvailable(Point point) {
+    return Main.units.stream().filter(Unit::isAlive).map(Unit::getPosition)
+        .noneMatch(point::equals);
+  }
 
-    for (Integer[] e : Main.getAdjacentPoints(pos[0], pos[1])) {
-      if (e[0] + e[1] > 1 && e[0] < Main.map.get(e[1]).length() && e[1] < Main.map.size()
-          && Main.map.get(e[1]).charAt(e[0]) == '.' && Main.units.stream().filter(Unit::isAlive)
-              .noneMatch(u -> u.getX() == e[0] && u.getY() == e[1])) {
+  private static List<Point> getPossiblePositions(Point point) {
+    List<Point> positions = new ArrayList<>();
 
-        positions.add(e);
+    for (Point p : Main.getAdjacentPoints(point)) {
+      if (p.getX() + p.getY() > 1 && p.getX() < Main.map.get(p.getY()).length()
+          && p.getY() < Main.map.size() && Main.isEmptySpace(p) && Main.isAvailable(p)) {
+
+        positions.add(p);
       }
     }
 
@@ -228,17 +234,16 @@ public class Main {
   }
 
   public static Unit getSurroundingEnemy(Unit unit, SortedSet<Unit> enemies) {
-    TreeSet<Unit> closest = enemies.stream().filter(Unit::isAlive).filter(
-        enemy -> Math.abs(unit.getX() - enemy.getX()) + Math.abs(unit.getY() - enemy.getY()) < 2)
+    TreeSet<Unit> closest = enemies.stream().filter(Unit::isAlive).filter(unit::isSurrounding)
         .collect(Collectors.toCollection(() -> new TreeSet<>(Unit::compareTo)));
 
     Unit enemy = null;
     int hp = Integer.MAX_VALUE;
 
-    for (Unit c : closest) {
-      if (hp > c.getHp()) {
-        hp = c.getHp();
-        enemy = c;
+    for (Unit u : closest) {
+      if (hp > u.getHp()) {
+        hp = u.getHp();
+        enemy = u;
       }
     }
 
@@ -248,17 +253,91 @@ public class Main {
 }
 
 
-abstract class Unit implements Comparable<Unit> {
+class Point implements Comparable<Point> {
 
-  protected int x;
-  protected int y;
-  protected int hp = 200;
-  protected int[] target = null;
-  protected boolean alive = true;
+  private int x;
+  private int y;
+  private int steps = 0;
 
-  protected Unit(int x, int y) {
+  public Point(int x, int y) {
     this.setX(x);
     this.setY(y);
+  }
+
+  public Point(int x, int y, int steps) {
+    this(x, y);
+    this.setSteps(steps);
+  }
+
+  public boolean isSurrounding(Point point) {
+    return Math.abs(this.x - point.getX()) + Math.abs(this.y - point.getY()) < 2;
+  }
+
+  @Override
+  public String toString() {
+    return this.x + "," + this.y;
+  }
+
+  @Override
+  public int compareTo(Point point) {
+    if (this.y == point.getY()) {
+      return this.x - point.getX();
+    }
+
+    return this.y - point.getY();
+  }
+
+  @Override
+  public boolean equals(Object object) {
+    if (object instanceof Point) {
+      Point point = (Point) object;
+      return this.x == point.getX() && this.y == point.getY();
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
+
+  public int getX() {
+    return x;
+  }
+
+  public int getY() {
+    return y;
+  }
+
+  public int getSteps() {
+    return steps;
+  }
+
+  public void setX(int x) {
+    this.x = x;
+  }
+
+  public void setY(int y) {
+    this.y = y;
+  }
+
+  public void setSteps(int steps) {
+    this.steps = steps;
+  }
+
+}
+
+
+abstract class Unit implements Comparable<Unit> {
+
+  protected Point position;
+  protected Point target;
+  protected int hp = 200;
+  protected boolean alive = true;
+
+  protected Unit(Point position) {
+    this.setPosition(position);
   }
 
   protected abstract TreeSet<Unit> getEnemies();
@@ -268,30 +347,23 @@ abstract class Unit implements Comparable<Unit> {
       return;
     }
 
-    if (this.x == this.target[0] && this.y == this.target[1]) {
+    if (this.position.equals(this.target)) {
       this.attack();
       return;
     }
 
-    Integer[] t = new Integer[] {this.target[0], this.target[1]};
+    for (Point p : Main.getAdjacentPoints(this.position)) {
+      if (Main.isEmptySpace(p)) {
+        int steps = Main.breadthFirstSearch(p, this.target);
 
-    int minSteps = Integer.MAX_VALUE;
-
-    for (Integer[] e : Main.getAdjacentPoints(this.x, this.y)) {
-      if (Main.map.get(e[1]).charAt(e[0]) == '.') {
-        int steps = Main.breadthFirstSearch(e, t);
-
-        if (minSteps > steps && Main.units.stream().filter(Unit::isAlive)
-            .noneMatch(u -> u.getX() == e[0] && u.getY() == e[1])) {
-
-          minSteps = steps;
-          this.setX(e[0]);
-          this.setY(e[1]);
+        if (steps == this.target.getSteps() - 1 && Main.isAvailable(p)) {
+          this.setPosition(p);
+          break;
         }
       }
     }
 
-    if (this.x == this.target[0] && this.y == this.target[1]) {
+    if (this.position.equals(this.target)) {
       this.attack();
     }
   }
@@ -300,7 +372,7 @@ abstract class Unit implements Comparable<Unit> {
     Unit enemy = Main.getSurroundingEnemy(this, this.getEnemies());
 
     if (enemy == null) {
-      this.setTarget();
+      this.calculateTarget();
       this.move();
     } else {
       enemy.isAttacked(this.getAttack());
@@ -316,24 +388,41 @@ abstract class Unit implements Comparable<Unit> {
     this.setAlive(this.hp > 0);
   }
 
-  public void setTarget() {
+  public void calculateTarget() {
     Main.getFirstUnit(this, this.getEnemies());
+  }
+
+  public boolean isSurrounding(Unit enemy) {
+    return this.position.isSurrounding(enemy.getPosition());
+  }
+
+  @Override
+  public String toString() {
+    return "(" + this.position.toString() + ")";
   }
 
   @Override
   public int compareTo(Unit unit) {
-    if (this.y == unit.getY()) {
-      return this.x - unit.getX();
-    }
-
-    return this.y - unit.getY();
+    return this.position.compareTo(unit.getPosition());
   }
 
   @Override
-  public abstract boolean equals(Object object);
+  public boolean equals(Object object) {
+    if (object instanceof Goblin) {
+      Goblin goblin = (Goblin) object;
+      return this.position.equals(goblin.getPosition()) && goblin.getHp() == this.hp;
+    } else if (object instanceof Elf) {
+      Elf elf = (Elf) object;
+      return this.position.equals(elf.getPosition()) && elf.getHp() == this.hp;
+    }
+
+    return false;
+  }
 
   @Override
-  public abstract int hashCode();
+  public int hashCode() {
+    return this.toString().hashCode();
+  }
 
   public boolean isGoblin() {
     return this.getClass().equals(Goblin.class);
@@ -345,40 +434,32 @@ abstract class Unit implements Comparable<Unit> {
 
   protected abstract int getAttack();
 
-  public int getX() {
-    return x;
+  public Point getPosition() {
+    return position;
   }
 
-  public int getY() {
-    return y;
+  public Point getTarget() {
+    return target;
   }
 
   public int getHp() {
     return hp;
   }
 
-  public int[] getTarget() {
-    return target;
-  }
-
   public boolean isAlive() {
     return alive;
   }
 
-  public void setX(int x) {
-    this.x = x;
+  public void setPosition(Point position) {
+    this.position = position;
   }
 
-  public void setY(int y) {
-    this.y = y;
+  public void setTarget(Point target) {
+    this.target = target;
   }
 
   public void setHp(int hp) {
     this.hp = hp;
-  }
-
-  public void setTarget(int[] target) {
-    this.target = target;
   }
 
   public void setAlive(boolean alive) {
@@ -392,8 +473,8 @@ class Goblin extends Unit {
 
   private static int attack = 3;
 
-  public Goblin(int x, int y) {
-    super(x, y);
+  public Goblin(Point position) {
+    super(position);
   }
 
   public TreeSet<Unit> getEnemies() {
@@ -402,19 +483,8 @@ class Goblin extends Unit {
   }
 
   @Override
-  public boolean equals(Object object) {
-    if (object instanceof Goblin) {
-      Goblin goblin = (Goblin) object;
-
-      return goblin.getX() == this.x && goblin.getY() == this.y && goblin.getHp() == this.hp;
-    }
-
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return this.toString().hashCode();
+  public String toString() {
+    return "G" + super.toString();
   }
 
   protected int getAttack() {
@@ -428,8 +498,8 @@ class Elf extends Unit {
 
   private static int attack = 3;
 
-  public Elf(int x, int y) {
-    super(x, y);
+  public Elf(Point position) {
+    super(position);
   }
 
   public TreeSet<Unit> getEnemies() {
@@ -438,19 +508,8 @@ class Elf extends Unit {
   }
 
   @Override
-  public boolean equals(Object object) {
-    if (object instanceof Elf) {
-      Elf elf = (Elf) object;
-
-      return elf.getX() == this.x && elf.getY() == this.y && elf.getHp() == this.hp;
-    }
-
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return this.toString().hashCode();
+  public String toString() {
+    return "E" + super.toString();
   }
 
   protected int getAttack() {
