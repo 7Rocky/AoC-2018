@@ -106,22 +106,18 @@ public class Main {
   }
 
   private static boolean lifecycle() {
-    boolean isLast = false;
-
     for (Unit unit : Main.units) {
       if (unit.isAlive()) {
         unit.calculateTarget();
         unit.move();
       }
 
-      isLast = unit.equals(Main.units.last());
-
       if (Main.allGoblins() || Main.allElves()) {
-        break;
+        return unit.equals(Main.units.last());
       }
     }
 
-    return isLast;
+    return true;
   }
 
   private static void reSortUnits() {
