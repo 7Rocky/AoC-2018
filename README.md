@@ -32,3 +32,4 @@ make test
 | [Day 13](day_13) | Mine Cart Madness                  | :star::star::star::star::star: |
 | [Day 14](day_14) | Chocolate Charts                   | :star::star::star:             |
 | [Day 15](day_15) | Beverage Bandits                   | :star::star::star::star::star: |
+| [Day 16](day_16) | Chronal Classification             | :star::star::star:             |
