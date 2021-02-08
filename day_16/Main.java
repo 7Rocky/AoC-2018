@@ -31,18 +31,19 @@ public class Main {
     Main.readInput();
 
     for (int opcode = 0; opcode < 16; opcode++) {
-      mapOpcodes.put(opcode, new HashSet<>(knownOpcodes));
+      Main.mapOpcodes.put(opcode, new HashSet<>(Main.knownOpcodes));
     }
 
-    for (int i = 0; i < beforeStates.size(); i++) {
-      Main.behaviours.add(Main.matches(i));
+    for (int i = 0; i < Main.beforeStates.size(); i++) {
+      Main.behaviours.add(
+          Main.matches(Main.beforeStates.get(i), Main.opcodes.get(i), Main.afterStates.get(i)));
     }
 
     System.out.print("Number of samples that behave like three or more opcodes (1): ");
     System.out.println(Main.behaviours.stream().filter(b -> b >= 3).count());
 
-    while (mapOpcodes.values().stream().anyMatch(id -> id.size() > 1)) {
-      for (Set<String> matchedOpcodes : mapOpcodes.values()) {
+    while (Main.mapOpcodes.values().stream().anyMatch(id -> id.size() > 1)) {
+      for (Set<String> matchedOpcodes : Main.mapOpcodes.values()) {
         if (matchedOpcodes.size() == 1) {
           Main.removeOpcodes(Main.getSingleElement(matchedOpcodes));
         }
@@ -52,7 +53,7 @@ public class Main {
     List<Integer> regs = Arrays.asList(0, 0, 0, 0);
 
     for (List<Integer> opcode : testProgram) {
-      regs = Opcode.exec(Main.getSingleElement(mapOpcodes.get(opcode.get(0))), regs, opcode);
+      regs = Opcode.exec(Main.getSingleElement(Main.mapOpcodes.get(opcode.get(0))), regs, opcode);
     }
 
     System.out.println("Value of register 0 after executing the program (2): " + regs.get(0));
@@ -99,12 +100,8 @@ public class Main {
     }
   }
 
-  private static int matches(int index) {
+  private static int matches(List<Integer> before, List<Integer> opcode, List<Integer> after) {
     Set<String> matches = new HashSet<>();
-
-    List<Integer> before = Main.beforeStates.get(index);
-    List<Integer> opcode = Main.opcodes.get(index);
-    List<Integer> after = Main.afterStates.get(index);
 
     for (String id : Main.knownOpcodes) {
       if (after.equals(Opcode.exec(id, before, opcode))) {
@@ -112,7 +109,7 @@ public class Main {
       }
     }
 
-    Set<String> knownMatches = mapOpcodes.get(opcode.get(0));
+    Set<String> knownMatches = Main.mapOpcodes.get(opcode.get(0));
     knownMatches.retainAll(matches);
 
     return matches.size();
