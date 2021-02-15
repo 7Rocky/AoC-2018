@@ -33,3 +33,4 @@ make test
 | [Day 14](day_14) | Chocolate Charts                   | :star::star::star:             |
 | [Day 15](day_15) | Beverage Bandits                   | :star::star::star::star::star: |
 | [Day 16](day_16) | Chronal Classification             | :star::star::star:             |
+| [Day 17](day_17) | Reservoir Research                 | :star::star::star::star:       |
