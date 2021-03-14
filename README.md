@@ -36,3 +36,4 @@ make test
 | [Day 17](day_17) | Reservoir Research                 | :star::star::star::star:       |
 | [Day 18](day_18) | Settlers of The North Pole         | :star::star::star:             |
 | [Day 19](day_19) | Go With The Flow                   | :star::star::star:             |
+| [Day 20](day_20) | A Regular Map                      | :star::star::star::star:       |
