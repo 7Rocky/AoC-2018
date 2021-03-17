@@ -63,7 +63,7 @@ class Node {
       sum += childNodes.stream().mapToInt(Node::sumMetadataEntries).sum();
     }
 
-    return sum + metadataEntries.stream().mapToInt(m -> m).sum();
+    return sum + metadataEntries.stream().mapToInt(Integer::valueOf).sum();
   }
 
   public int getValue() {
