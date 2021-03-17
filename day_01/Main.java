@@ -21,7 +21,7 @@ public class Main {
     }
 
     System.out.print("Resulting frequency (1): ");
-    System.out.println(frequencyChanges.stream().mapToInt(f -> f).sum());
+    System.out.println(frequencyChanges.stream().mapToInt(Integer::valueOf).sum());
 
     Set<Integer> resultingFrequencies = new TreeSet<>();
 
