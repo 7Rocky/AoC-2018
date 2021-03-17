@@ -7,11 +7,12 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class Main {
 
   static String regex = "";
-  static HashMap<Point, Integer> map = new HashMap<>();
+  static Map<Point, Integer> map = new HashMap<>();
 
   public static void main(String[] args) {
     try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
