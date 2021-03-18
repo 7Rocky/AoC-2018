@@ -76,16 +76,15 @@ public class Main {
         Pattern.compile("Step (\\w+) must be finished before step (\\w+) can begin\\.");
 
     Matcher matcher = pattern.matcher(line);
+    matcher.find();
 
-    while (matcher.find()) {
-      String requiredId = matcher.group(1);
-      String id = matcher.group(2);
+    String requiredId = matcher.group(1);
+    String id = matcher.group(2);
 
-      steps.computeIfAbsent(id, Step::new);
-      steps.computeIfAbsent(requiredId, Step::new);
+    steps.computeIfAbsent(id, Step::new);
+    steps.computeIfAbsent(requiredId, Step::new);
 
-      steps.get(id).addRequiredStep(requiredId);
-    }
+    steps.get(id).addRequiredStep(requiredId);
   }
 
   private static SortedSet<String> nextSteps(Map<String, Step> steps) {
