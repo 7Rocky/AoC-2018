@@ -37,23 +37,22 @@ public class Main {
     Pattern pattern = Pattern
         .compile("position=<\\s*(-?\\d+),\\s*(-?\\d+)> velocity=<\\s*(-?\\d+),\\s*(-?\\d+)>");
     Matcher matcher = pattern.matcher(line);
+    matcher.find();
 
-    while (matcher.find()) {
-      int px = Integer.parseInt(matcher.group(1));
-      int py = Integer.parseInt(matcher.group(2));
-      int vx = Integer.parseInt(matcher.group(3));
-      int vy = Integer.parseInt(matcher.group(4));
+    int px = Integer.parseInt(matcher.group(1));
+    int py = Integer.parseInt(matcher.group(2));
+    int vx = Integer.parseInt(matcher.group(3));
+    int vy = Integer.parseInt(matcher.group(4));
 
-      List<Integer> position = new ArrayList<>(2);
-      position.add(px);
-      position.add(py);
+    List<Integer> position = new ArrayList<>(2);
+    position.add(px);
+    position.add(py);
 
-      List<Integer> velocity = new ArrayList<>(2);
-      velocity.add(vx);
-      velocity.add(vy);
+    List<Integer> velocity = new ArrayList<>(2);
+    velocity.add(vx);
+    velocity.add(vy);
 
-      Main.points.add(new Point(position, velocity));
-    }
+    Main.points.add(new Point(position, velocity));
   }
 
   private static void printPoints(int time) {
