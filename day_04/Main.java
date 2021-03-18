@@ -84,13 +84,10 @@ public class Main {
   private static int setGuardsIds(Map<Integer, Guard> guards, String line) {
     Pattern patternId = Pattern.compile("#(\\d+)");
     Matcher matcher = patternId.matcher(line);
+    matcher.find();
 
-    int id = 0;
-
-    while (matcher.find()) {
-      id = Integer.parseInt(matcher.group(1));
-      guards.computeIfAbsent(id, Guard::new);
-    }
+    int id = Integer.parseInt(matcher.group(1));
+    guards.computeIfAbsent(id, Guard::new);
 
     return id;
   }
@@ -98,25 +95,24 @@ public class Main {
   private static void setGuardsSleepingTime(Map<Integer, Guard> guards, int id, String line) {
     Pattern patternDate = Pattern.compile("\\[(\\d+)-(\\d+)-(\\d+) (\\d+):(\\d+)\\]");
     Matcher matcher = patternDate.matcher(line);
+    matcher.find();
 
-    while (matcher.find()) {
-      int year = Integer.parseInt(matcher.group(1));
-      int month = Integer.parseInt(matcher.group(2));
-      int day = Integer.parseInt(matcher.group(3));
-      int hour = Integer.parseInt(matcher.group(4));
-      int minutes = Integer.parseInt(matcher.group(5));
+    int year = Integer.parseInt(matcher.group(1));
+    int month = Integer.parseInt(matcher.group(2));
+    int day = Integer.parseInt(matcher.group(3));
+    int hour = Integer.parseInt(matcher.group(4));
+    int minutes = Integer.parseInt(matcher.group(5));
 
-      LocalDateTime date = LocalDateTime.of(year, month, day, hour, minutes);
-      Guard guard = guards.get(id);
+    LocalDateTime date = LocalDateTime.of(year, month, day, hour, minutes);
+    Guard guard = guards.get(id);
 
-      if (line.contains("falls asleep")) {
-        guard.addFallAsleeps(date);
-      } else if (line.contains("wakes up")) {
-        guard.addWakeUps(date);
-      }
-
-      guards.put(id, guard);
+    if (line.contains("falls asleep")) {
+      guard.addFallAsleeps(date);
+    } else if (line.contains("wakes up")) {
+      guard.addWakeUps(date);
     }
+
+    guards.put(id, guard);
   }
 
 }
