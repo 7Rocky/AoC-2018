@@ -214,31 +214,31 @@ public class Main {
   }
 
   private static void updateBorders(Matcher matcher) {
-    while (matcher.find()) {
-      int x = Integer.parseInt(matcher.group(2));
-      int y = Integer.parseInt(matcher.group(3));
+    matcher.find();
 
-      if (matcher.group(1).equals("y")) {
-        int aux = x;
-        x = y;
-        y = aux;
-      }
+    int x = Integer.parseInt(matcher.group(2));
+    int y = Integer.parseInt(matcher.group(3));
 
-      if (Main.borders[0] > x) {
-        Main.borders[0] = x;
-      }
+    if (matcher.group(1).equals("y")) {
+      int aux = x;
+      x = y;
+      y = aux;
+    }
 
-      if (Main.borders[1] < x) {
-        Main.borders[1] = x;
-      }
+    if (Main.borders[0] > x) {
+      Main.borders[0] = x;
+    }
 
-      if (Main.borders[2] > y) {
-        Main.borders[2] = y;
-      }
+    if (Main.borders[1] < x) {
+      Main.borders[1] = x;
+    }
 
-      if (Main.borders[3] < y) {
-        Main.borders[3] = y;
-      }
+    if (Main.borders[2] > y) {
+      Main.borders[2] = y;
+    }
+
+    if (Main.borders[3] < y) {
+      Main.borders[3] = y;
     }
   }
 
@@ -256,23 +256,23 @@ public class Main {
   }
 
   private static void setClays(Matcher matcher) {
-    while (matcher.find()) {
-      if (matcher.group(1).equals("x")) {
-        int x = Integer.parseInt(matcher.group(2));
-        int yLow = Integer.parseInt(matcher.group(3));
-        int yHigh = Integer.parseInt(matcher.group(4));
+    matcher.find();
 
-        for (int i = yLow; i <= yHigh; i++) {
-          Main.map.get(i).put(x, '#');
-        }
-      } else {
-        int y = Integer.parseInt(matcher.group(2));
-        int xLow = Integer.parseInt(matcher.group(3));
-        int xHigh = Integer.parseInt(matcher.group(4));
+    if (matcher.group(1).equals("x")) {
+      int x = Integer.parseInt(matcher.group(2));
+      int yLow = Integer.parseInt(matcher.group(3));
+      int yHigh = Integer.parseInt(matcher.group(4));
 
-        for (int i = xLow; i <= xHigh; i++) {
-          Main.map.get(y).put(i, '#');
-        }
+      for (int i = yLow; i <= yHigh; i++) {
+        Main.map.get(i).put(x, '#');
+      }
+    } else {
+      int y = Integer.parseInt(matcher.group(2));
+      int xLow = Integer.parseInt(matcher.group(3));
+      int xHigh = Integer.parseInt(matcher.group(4));
+
+      for (int i = xLow; i <= xHigh; i++) {
+        Main.map.get(y).put(i, '#');
       }
     }
   }
