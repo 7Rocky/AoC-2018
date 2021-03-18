@@ -66,16 +66,15 @@ public class Main {
   private static void setClaims(List<Claim> claims, String line) {
     Pattern pattern = Pattern.compile("#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)");
     Matcher matcher = pattern.matcher(line);
+    matcher.find();
 
-    while (matcher.find()) {
-      int id = Integer.parseInt(matcher.group(1));
-      int left = Integer.parseInt(matcher.group(2));
-      int top = Integer.parseInt(matcher.group(3));
-      int width = Integer.parseInt(matcher.group(4));
-      int height = Integer.parseInt(matcher.group(5));
+    int id = Integer.parseInt(matcher.group(1));
+    int left = Integer.parseInt(matcher.group(2));
+    int top = Integer.parseInt(matcher.group(3));
+    int width = Integer.parseInt(matcher.group(4));
+    int height = Integer.parseInt(matcher.group(5));
 
-      claims.add(new Claim(id, left, top, width, height));
-    }
+    claims.add(new Claim(id, left, top, width, height));
   }
 
   private static void setFabric(List<String> fabric, List<Claim> claims) {
