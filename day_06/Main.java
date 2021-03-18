@@ -22,13 +22,12 @@ public class Main {
     try (var bufferedReader = new BufferedReader(new FileReader("input.txt"))) {
       bufferedReader.lines().forEach(line -> {
         Matcher matcher = pattern.matcher(line);
+        matcher.find();
 
-        while (matcher.find()) {
-          int x = Integer.parseInt(matcher.group(1));
-          int y = Integer.parseInt(matcher.group(2));
+        int x = Integer.parseInt(matcher.group(1));
+        int y = Integer.parseInt(matcher.group(2));
 
-          coordinates.add(new Coordinate(x, y));
-        }
+        coordinates.add(new Coordinate(x, y));
       });
     } catch (IOException e) {
       e.printStackTrace();
