@@ -24,11 +24,10 @@ public class Main {
 
       Pattern pattern = Pattern.compile("(\\d+) players; last marble is worth (\\d+) points");
       Matcher matcher = pattern.matcher(input);
+      matcher.find();
 
-      while (matcher.find()) {
-        numPlayers = Integer.parseInt(matcher.group(1));
-        numRounds = Integer.parseInt(matcher.group(2));
-      }
+      numPlayers = Integer.parseInt(matcher.group(1));
+      numRounds = Integer.parseInt(matcher.group(2));
     } catch (IOException e) {
       e.printStackTrace();
     }
